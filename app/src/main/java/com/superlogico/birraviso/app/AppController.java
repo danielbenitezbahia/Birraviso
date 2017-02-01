@@ -1,7 +1,7 @@
 package com.superlogico.birraviso.app;
 
 /**
- * Created by Daniel on 1/2/2017.
+ * Created by daniel.benitez on 1/31/2017.
  */
 
 import android.app.Application;

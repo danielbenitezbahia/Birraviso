@@ -1,7 +1,7 @@
 package com.superlogico.birraviso.helper;
 
 /**
- * Created by Daniel on 1/2/2017.
+ * Created by daniel.benitez on 2/1/2017.
  */
 
 import android.content.Context;

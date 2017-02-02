@@ -40,6 +40,7 @@ public class LoginActivity extends Activity {
     private ProgressDialog pDialog;
     private SessionManager session;
     private SQLiteHandler db;
+    private static AppController appController;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -185,6 +186,7 @@ public class LoginActivity extends Activity {
         };
 
         // Adding request to request queue
+        String a = "0";
         AppController.getInstance().addToRequestQueue(strReq, tag_string_req);
     }
 

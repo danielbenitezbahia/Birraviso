@@ -25,6 +25,15 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "android_api";
 
     // Login table name
+    private static final String TABLE_BEER = "beer";
+
+    // Login Table Columns names
+    private static final String BEER_ID = "id";
+    private static final String BEER_NAME = "name";
+    private static final String BEER_TRADEMARK = "trademark";
+    private static final String BEER_STYLE = "style";
+    private static final String BEER_IBU = "ibu";
+
     private static final String TABLE_USER = "user";
 
     // Login Table Columns names
@@ -33,6 +42,8 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     private static final String KEY_EMAIL = "email";
     private static final String KEY_UID = "uid";
     private static final String KEY_CREATED_AT = "created_at";
+
+
 
     public SQLiteHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);

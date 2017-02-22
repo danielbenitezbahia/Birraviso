@@ -10,4 +10,7 @@ public class AppConfig {
 
     // Server user register url
     public static String URL_REGISTER = "http://timbaviso.esy.es/android_login_api/register.php";
+
+    // Complete available beer list
+    public static String GET_BEERS_URL = "http://timbaviso.esy.es/android_login_api/get_beers.php";
 }

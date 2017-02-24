@@ -1,37 +1,38 @@
 package com.superlogico.birraviso;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.util.Log;
-import android.view.View;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.content.Intent;
+import android.view.View;
 import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.superlogico.birraviso.activity.LoginActivity;
 import com.superlogico.birraviso.activity.RegisterActivity;
 import com.superlogico.birraviso.app.AppConfig;
 import com.superlogico.birraviso.app.AppController;
 import com.superlogico.birraviso.helper.SQLiteHandler;
 import com.superlogico.birraviso.helper.SessionManager;
-import com.superlogico.birraviso.activity.LoginActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity
@@ -173,8 +174,10 @@ public class MainActivity extends AppCompatActivity
                     // Check for error node in json
                     if (!error) {
 
+                        saveAllBeers(jObj);
+
                         // Now store the user in SQLite
-                        String uid = jObj.getString("uid");
+                       // String uid = jObj.getString("uid");
 
                         /*JSONObject user = jObj.getJSONObject("user");
                         String name = user.getString("name");
@@ -231,6 +234,38 @@ public class MainActivity extends AppCompatActivity
         // Adding request to request queue
         String a = "0";
         AppController.getInstance().addToRequestQueue(strReq, tag_string_req);
+    }
+
+    private void saveAllBeers(JSONObject json){
+        Iterator<String> iter = json.keys();
+        while (iter.hasNext()) {
+            String key = iter.next();
+            try {
+                JSONObject beer = json.getJSONObject(key);
+                String name = beer.getString("name");
+                String trademark = beer.getString("trademark");
+                String style = beer.getString("style");
+                String ibu = beer.getString("ibu");
+                String alcohol = beer.getString("name");
+               // String name = beer.getString("name");
+               // String name = beer.getString("name");
+               // String name = beer.getString("name");
+               // String name = beer.getString("name");
+               // String name = beer.getString("name");
+               // String name = beer.getString("name");
+               // String name = beer.getString("name");
+
+
+
+
+            } catch (JSONException e) {
+                Log.e(TAG, "JSON ERROR! " + e.getMessage());
+                Toast.makeText(getApplicationContext(),
+                        e.getMessage(), Toast.LENGTH_LONG).show();
+                hideDialog();
+            }
+        }
+
     }
 
     private void showDialog() {

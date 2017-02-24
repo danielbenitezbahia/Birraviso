@@ -209,7 +209,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     public void deleteBeers() {
         SQLiteDatabase db = this.getWritableDatabase();
         // Delete All Rows
-        db.delete(TABLE_USER, null, null);
+        db.delete(TABLE_BEER, null, null);
         db.close();
 
         Log.d(TAG, "Deleted all user info from sqlite");

@@ -24,15 +24,22 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     // Database Name
     private static final String DATABASE_NAME = "android_api";
 
-    // Login table name
+    // Beers table name
     private static final String TABLE_BEER = "beer";
-
     // Login Table Columns names
     private static final String BEER_ID = "id";
     private static final String BEER_NAME = "name";
     private static final String BEER_TRADEMARK = "trademark";
     private static final String BEER_STYLE = "style";
     private static final String BEER_IBU = "ibu";
+    private static final String BEER_ALCOHOL = "alcohol";
+    private static final String BEER_SMR = "srm";
+    private static final String BEER_DESCRIPTION = "description";
+    private static final String BEER_OTHERS = "others";
+    private static final String BEER_CONTACT_INFO = "contact";
+    private static final String BEER_GEO_X = "geo_x";
+    private static final String BEER_GEO_Y = "geo_y";
+
 
     private static final String TABLE_USER = "user";
 
@@ -58,6 +65,14 @@ public class SQLiteHandler extends SQLiteOpenHelper {
                 + KEY_CREATED_AT + " TEXT" + ")";
         db.execSQL(CREATE_LOGIN_TABLE);
 
+        String CREATE_BEER_TABLE = "CREATE TABLE " + TABLE_BEER + "("
+                + BEER_ID + " INTEGER PRIMARY KEY," + BEER_NAME + " TEXT,"
+                + BEER_TRADEMARK + " TEXT," + BEER_STYLE + " TEXT, "
+                + BEER_IBU + " TEXT" + BEER_ALCOHOL + " TEXT,"+ BEER_SMR + " TEXT,"
+                + BEER_DESCRIPTION + " TEXT,"+ BEER_OTHERS + " TEXT," + BEER_CONTACT_INFO
+                + " TEXT,"+ BEER_GEO_X + " TEXT," + BEER_GEO_Y + " TEXT" + " )";
+        db.execSQL(CREATE_BEER_TABLE);
+
         Log.d(TAG, "Database tables created");
     }
 
@@ -66,6 +81,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // Drop older table if existed
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USER);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_BEER);
 
         // Create tables again
         onCreate(db);
@@ -125,6 +141,87 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         db.close();
 
         Log.d(TAG, "Deleted all user info from sqlite");
+    }
+
+    /**
+     * Storing beer details in database
+     * */
+    public void addBeer(String name, String trademark, String style, String ibu,
+                        String alcohol, String srm, String description, String others,
+                        String contact, String geo_x, String geo_y) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(BEER_NAME, name);
+        values.put(BEER_TRADEMARK, trademark);
+        values.put(BEER_STYLE, style);
+        values.put(BEER_IBU, ibu);
+        values.put(BEER_ALCOHOL, alcohol);
+        values.put(BEER_SMR, srm);
+        values.put(BEER_DESCRIPTION, description);
+        values.put(BEER_OTHERS, others);
+        values.put(BEER_CONTACT_INFO, contact);
+        values.put(BEER_GEO_X, geo_x);
+        values.put(BEER_GEO_Y, geo_y);
+
+        // Inserting Row
+        long id = db.insert(TABLE_BEER, null, values);
+        db.close(); // Closing database connection
+
+        Log.d(TAG, "New beer inserted into sqlite: " + id);
+    }
+
+    /**
+     * Getting beers data from database
+     * */
+    public HashMap<String, String> getAllBeers() {
+        HashMap<String, String> beer = new HashMap<String, String>();
+        String selectQuery = "SELECT  * FROM " + TABLE_BEER;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        // Move to first row
+        cursor.moveToFirst();
+        if (cursor.getCount() > 0) {
+            beer.put("name", cursor.getString(1));
+            beer.put("trademark", cursor.getString(2));
+            beer.put("style", cursor.getString(3));
+            beer.put("ibu", cursor.getString(4));
+            beer.put("alcohol", cursor.getString(5));
+            beer.put("srm", cursor.getString(6));
+            beer.put("description", cursor.getString(7));
+            beer.put("others", cursor.getString(8));
+            beer.put("contact", cursor.getString(9));
+            beer.put("geo_x", cursor.getString(10));
+            beer.put("geo_y", cursor.getString(11));
+        }
+        cursor.close();
+        db.close();
+        // return user
+        Log.d(TAG, "Fetching beer from Sqlite: " + beer.toString());
+
+        return beer;
+    }
+
+    /**
+     * Re crate database Delete all tables and create them again
+     * */
+    public void deleteBeers() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        // Delete All Rows
+        db.delete(TABLE_USER, null, null);
+        db.close();
+
+        Log.d(TAG, "Deleted all user info from sqlite");
+    }
+
+    public void deleteBeerById() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        // Delete All Rows
+        db.delete(TABLE_USER, null, null);
+        db.close();
+
+
     }
 
 }

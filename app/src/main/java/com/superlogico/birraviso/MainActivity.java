@@ -255,9 +255,6 @@ public class MainActivity extends AppCompatActivity
                // String name = beer.getString("name");
                // String name = beer.getString("name");
 
-
-
-
             } catch (JSONException e) {
                 Log.e(TAG, "JSON ERROR! " + e.getMessage());
                 Toast.makeText(getApplicationContext(),

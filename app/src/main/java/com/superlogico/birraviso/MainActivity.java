@@ -53,6 +53,7 @@ public class MainActivity extends AppCompatActivity
         // SqLite database handler
         db = new SQLiteHandler(getApplicationContext());
 
+
         // session manager
         session = new SessionManager(getApplicationContext());
 
@@ -77,6 +78,10 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        // Progress dialog
+        pDialog = new ProgressDialog(this);
+        pDialog.setCancelable(false);
+        this.getBeerList();
     }
 
     @Override
@@ -152,14 +157,14 @@ public class MainActivity extends AppCompatActivity
         finish();
     }
 
-    private void getBeerList(final String email, final String password) {
+    private void getBeerList() {
         // Tag used to cancel the request
         String tag_string_req = "req_login";
 
-        pDialog.setMessage("Logging in ...");
+        pDialog.setMessage("Cargando lista de birras...");
         showDialog();
 
-        StringRequest strReq = new StringRequest(Request.Method.POST,
+        StringRequest strReq = new StringRequest(Request.Method.GET,
                 AppConfig.GET_BEERS_URL, new Response.Listener<String>() {
 
             @Override
@@ -169,10 +174,10 @@ public class MainActivity extends AppCompatActivity
 
                 try {
                     JSONObject jObj = new JSONObject(response);
-                    boolean error = jObj.getBoolean("error");
+                   // boolean error = jObj.getBoolean("error");
 
                     // Check for error node in json
-                    if (!error) {
+                   // if (!error) {
 
                         saveAllBeers(jObj);
 
@@ -194,13 +199,13 @@ public class MainActivity extends AppCompatActivity
                    //     Intent intent = new Intent(GetBeerList.this,
                      //           MainActivity.class);
                        // startActivity(intent);
-                        finish();
-                    } else {
-                        // Error in login. Get the error message
-                        String errorMsg = jObj.getString("error_msg");
-                        Toast.makeText(getApplicationContext(),
-                                errorMsg, Toast.LENGTH_LONG).show();
-                    }
+                       // finish();
+                  //  } else {
+                   //     // Error in login. Get the error message
+                   //     String errorMsg = jObj.getString("error_msg");
+                   //     Toast.makeText(getApplicationContext(),
+                   //             errorMsg, Toast.LENGTH_LONG).show();
+
                 } catch (JSONException e) {
                     // JSON error
                     e.printStackTrace();
@@ -219,15 +224,7 @@ public class MainActivity extends AppCompatActivity
             }
         }) {
 
-            @Override
-            protected Map<String, String> getParams() {
-                // Posting parameters to login url
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("email", email);
-                params.put("password", password);
 
-                return params;
-            }
 
         };
 
@@ -237,23 +234,25 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void saveAllBeers(JSONObject json){
+        db.deleteBeers();
         Iterator<String> iter = json.keys();
         while (iter.hasNext()) {
             String key = iter.next();
             try {
                 JSONObject beer = json.getJSONObject(key);
-                String name = beer.getString("name");
-                String trademark = beer.getString("trademark");
-                String style = beer.getString("style");
+                String name = key;
+                String trademark = beer.getString("marca");
+                String style = beer.getString("estilo");
                 String ibu = beer.getString("ibu");
-                String alcohol = beer.getString("name");
-               // String name = beer.getString("name");
-               // String name = beer.getString("name");
-               // String name = beer.getString("name");
-               // String name = beer.getString("name");
-               // String name = beer.getString("name");
-               // String name = beer.getString("name");
-               // String name = beer.getString("name");
+                String alcohol = beer.getString("alcohol");
+                String srm = beer.getString("srm");
+                String description = beer.getString("descripcion");
+                String others = beer.getString("otros");
+                String contact = beer.getString("contacto");
+                String geo_x = beer.getString("geo_x");
+                String geo_y = beer.getString("geo_y");
+
+                db.addBeer(name, trademark, style, ibu, alcohol, srm, description, others, contact, geo_x, geo_y);
 
             } catch (JSONException e) {
                 Log.e(TAG, "JSON ERROR! " + e.getMessage());

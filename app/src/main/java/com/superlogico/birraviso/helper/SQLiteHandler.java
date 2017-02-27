@@ -65,12 +65,13 @@ public class SQLiteHandler extends SQLiteOpenHelper {
                 + KEY_CREATED_AT + " TEXT" + ")";
         db.execSQL(CREATE_LOGIN_TABLE);
 
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_BEER);
         String CREATE_BEER_TABLE = "CREATE TABLE " + TABLE_BEER + "("
                 + BEER_ID + " INTEGER PRIMARY KEY," + BEER_NAME + " TEXT,"
                 + BEER_TRADEMARK + " TEXT," + BEER_STYLE + " TEXT, "
-                + BEER_IBU + " TEXT" + BEER_ALCOHOL + " TEXT,"+ BEER_SMR + " TEXT,"
+                + BEER_IBU + " TEXT, " + BEER_ALCOHOL + " TEXT, "+ BEER_SMR + " TEXT, "
                 + BEER_DESCRIPTION + " TEXT,"+ BEER_OTHERS + " TEXT," + BEER_CONTACT_INFO
-                + " TEXT,"+ BEER_GEO_X + " TEXT," + BEER_GEO_Y + " TEXT" + " )";
+                + " TEXT, "+ BEER_GEO_X + " TEXT, " + BEER_GEO_Y + " TEXT" + " )";
         db.execSQL(CREATE_BEER_TABLE);
 
         Log.d(TAG, "Database tables created");
@@ -132,7 +133,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     }
 
     /**
-     * Re crate database Delete all tables and create them again
+     * Re craete database Delete all tables and create them again
      * */
     public void deleteUsers() {
         SQLiteDatabase db = this.getWritableDatabase();

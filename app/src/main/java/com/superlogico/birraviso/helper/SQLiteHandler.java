@@ -10,7 +10,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-
+import com.superlogico.birraviso.model.Beer;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class SQLiteHandler extends SQLiteOpenHelper {
@@ -175,33 +176,34 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     /**
      * Getting beers data from database
      * */
-    public HashMap<String, String> getAllBeers() {
-        HashMap<String, String> beer = new HashMap<String, String>();
+
+    public ArrayList<Beer> getAllBeers() {
+
+        ArrayList<Beer> beerList = new ArrayList<Beer>();
         String selectQuery = "SELECT  * FROM " + TABLE_BEER;
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
         // Move to first row
         cursor.moveToFirst();
-        if (cursor.getCount() > 0) {
-            beer.put("name", cursor.getString(1));
-            beer.put("trademark", cursor.getString(2));
-            beer.put("style", cursor.getString(3));
-            beer.put("ibu", cursor.getString(4));
-            beer.put("alcohol", cursor.getString(5));
-            beer.put("srm", cursor.getString(6));
-            beer.put("description", cursor.getString(7));
-            beer.put("others", cursor.getString(8));
-            beer.put("contact", cursor.getString(9));
-            beer.put("geo_x", cursor.getString(10));
-            beer.put("geo_y", cursor.getString(11));
+        Beer beer;
+        beer = new Beer(cursor.getString(1), cursor.getString(2) , cursor.getString(3), cursor.getString(4), cursor.getString(5),
+                cursor.getString(6), cursor.getString(7), cursor.getString(8), cursor.getString(9), cursor.getString(10),
+                cursor.getString(11));
+        beerList.add(beer);
+        while (cursor.moveToNext()) {
+
+            beer = new Beer(cursor.getString(1), cursor.getString(2) , cursor.getString(3), cursor.getString(4), cursor.getString(5),
+                    cursor.getString(6), cursor.getString(7), cursor.getString(8), cursor.getString(9), cursor.getString(10),
+                    cursor.getString(11));
+            beerList.add(beer);
         }
         cursor.close();
         db.close();
         // return user
-        Log.d(TAG, "Fetching beer from Sqlite: " + beer.toString());
+        Log.d(TAG, "Fetching beer from Sqlite: " + beerList.toString());
 
-        return beer;
+        return beerList;
     }
 
     /**

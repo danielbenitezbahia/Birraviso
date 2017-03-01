@@ -2,6 +2,7 @@ package com.superlogico.birraviso;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -10,6 +11,9 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -21,18 +25,28 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.appindexing.Thing;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.superlogico.birraviso.activity.LoginActivity;
 import com.superlogico.birraviso.activity.RegisterActivity;
+import com.superlogico.birraviso.adapter.BeerAdapter;
+import com.superlogico.birraviso.adapter.DividerItemDecoration;
+import com.superlogico.birraviso.adapter.RecyclerTouchListener;
 import com.superlogico.birraviso.app.AppConfig;
 import com.superlogico.birraviso.app.AppController;
 import com.superlogico.birraviso.helper.SQLiteHandler;
 import com.superlogico.birraviso.helper.SessionManager;
+import com.superlogico.birraviso.model.Beer;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity
@@ -42,6 +56,14 @@ public class MainActivity extends AppCompatActivity
     private SQLiteHandler db;
     private SessionManager session;
     private ProgressDialog pDialog;
+    private List<Beer> beerList = new ArrayList<>();
+    private RecyclerView recyclerView;
+    private BeerAdapter bAdapter;
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    private GoogleApiClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +104,38 @@ public class MainActivity extends AppCompatActivity
         pDialog = new ProgressDialog(this);
         pDialog.setCancelable(false);
         this.getBeerList();
+        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+
+        bAdapter = new BeerAdapter(beerList);
+
+        recyclerView.setHasFixedSize(true);
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
+        recyclerView.setLayoutManager(mLayoutManager);
+        recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setAdapter(bAdapter);
+
+        recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), recyclerView, new RecyclerTouchListener.ClickListener() {
+            @Override
+            public void onClick(View view, int position) {
+                Beer beer = beerList.get(position);
+                Toast.makeText(getApplicationContext(), beer.getName() + " is selected!", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onLongClick(View view, int position) {
+
+            }
+        }));
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+    }
+
+    private void prepareBeerData()    {
+        beerList = db.getAllBeers();
+        bAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -145,7 +199,7 @@ public class MainActivity extends AppCompatActivity
     /**
      * Logging out the user. Will set isLoggedIn flag to false in shared
      * preferences Clears the user data from sqlite users table
-     * */
+     */
     private void logoutUser() {
         session.setLogin(false);
 
@@ -174,15 +228,16 @@ public class MainActivity extends AppCompatActivity
 
                 try {
                     JSONObject jObj = new JSONObject(response);
-                   // boolean error = jObj.getBoolean("error");
+                    // boolean error = jObj.getBoolean("error");
 
                     // Check for error node in json
-                   // if (!error) {
+                    // if (!error) {
 
-                        saveAllBeers(jObj);
+                    saveAllBeers(jObj);
+                    prepareBeerData();
 
-                        // Now store the user in SQLite
-                       // String uid = jObj.getString("uid");
+                    // Now store the user in SQLite
+                    // String uid = jObj.getString("uid");
 
                         /*JSONObject user = jObj.getJSONObject("user");
                         String name = user.getString("name");
@@ -193,18 +248,18 @@ public class MainActivity extends AppCompatActivity
                         // Inserting row in users table
                         db.addUser(name, email, uid, created_at);*/
 
-                        // aca va el parseo del JSON y guardada en base de datos
+                    // aca va el parseo del JSON y guardada en base de datos
 
-                        // Launch main activity
-                   //     Intent intent = new Intent(GetBeerList.this,
-                     //           MainActivity.class);
-                       // startActivity(intent);
-                       // finish();
-                  //  } else {
-                   //     // Error in login. Get the error message
-                   //     String errorMsg = jObj.getString("error_msg");
-                   //     Toast.makeText(getApplicationContext(),
-                   //             errorMsg, Toast.LENGTH_LONG).show();
+                    // Launch main activity
+                    //     Intent intent = new Intent(GetBeerList.this,
+                    //           MainActivity.class);
+                    // startActivity(intent);
+                    // finish();
+                    //  } else {
+                    //     // Error in login. Get the error message
+                    //     String errorMsg = jObj.getString("error_msg");
+                    //     Toast.makeText(getApplicationContext(),
+                    //             errorMsg, Toast.LENGTH_LONG).show();
 
                 } catch (JSONException e) {
                     // JSON error
@@ -225,7 +280,6 @@ public class MainActivity extends AppCompatActivity
         }) {
 
 
-
         };
 
         // Adding request to request queue
@@ -233,7 +287,7 @@ public class MainActivity extends AppCompatActivity
         AppController.getInstance().addToRequestQueue(strReq, tag_string_req);
     }
 
-    private void saveAllBeers(JSONObject json){
+    private void saveAllBeers(JSONObject json) {
         db.deleteBeers();
         Iterator<String> iter = json.keys();
         while (iter.hasNext()) {
@@ -272,5 +326,41 @@ public class MainActivity extends AppCompatActivity
     private void hideDialog() {
         if (pDialog.isShowing())
             pDialog.dismiss();
+    }
+
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    public Action getIndexApiAction() {
+        Thing object = new Thing.Builder()
+                .setName("Main Page") // TODO: Define a title for the content shown.
+                // TODO: Make sure this auto-generated URL is correct.
+                .setUrl(Uri.parse("http://[ENTER-YOUR-URL-HERE]"))
+                .build();
+        return new Action.Builder(Action.TYPE_VIEW)
+                .setObject(object)
+                .setActionStatus(Action.STATUS_TYPE_COMPLETED)
+                .build();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client.connect();
+        AppIndex.AppIndexApi.start(client, getIndexApiAction());
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        AppIndex.AppIndexApi.end(client, getIndexApiAction());
+        client.disconnect();
     }
 }

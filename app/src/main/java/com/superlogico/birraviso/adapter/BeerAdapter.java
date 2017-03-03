@@ -53,6 +53,11 @@ public class BeerAdapter extends RecyclerView.Adapter<BeerAdapter.MyViewHolder> 
 
     @Override
     public int getItemCount() {
+
         return beerList.size();
+    }
+
+    public void setBeerList(List<Beer> beerList) {
+        this.beerList = beerList;
     }
 }

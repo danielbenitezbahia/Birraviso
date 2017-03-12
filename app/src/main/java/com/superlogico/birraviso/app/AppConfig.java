@@ -13,4 +13,15 @@ public class AppConfig {
 
     // Complete available beer list
     public static String GET_BEERS_URL = "http://timbaviso.esy.es/android_login_api/get_beers.php";
+
+    public static String ADD_BEER_URL = "http://timbaviso.esy.es/android_login_api/add_beer.php";
+
+    public static String DELETE_BEER_URL = "http://timbaviso.esy.es/android_login_api/delete_beer.php";
+
+    public static String UPDATE_BEER_URL = "http://timbaviso.esy.es/android_login_api/update_beer.php";
+
+
+
+
+
 }

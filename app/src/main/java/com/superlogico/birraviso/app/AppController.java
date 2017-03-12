@@ -19,6 +19,8 @@ public class AppController extends Application {
 
     private static AppController mInstance;
 
+    public String currentUniqueId;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -51,5 +53,13 @@ public class AppController extends Application {
         if (mRequestQueue != null) {
             mRequestQueue.cancelAll(tag);
         }
+    }
+
+    public String getCurrentUniqueId() {
+        return currentUniqueId;
+    }
+
+    public void setCurrentUniqueId(String currentUniqueId) {
+        this.currentUniqueId = currentUniqueId;
     }
 }

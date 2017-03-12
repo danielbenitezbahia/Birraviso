@@ -29,6 +29,7 @@ import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.appindexing.Thing;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.superlogico.birraviso.activity.AddBeerActivity;
 import com.superlogico.birraviso.activity.LoginActivity;
 import com.superlogico.birraviso.activity.RegisterActivity;
 import com.superlogico.birraviso.adapter.BeerAdapter;
@@ -52,6 +53,7 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+
     private static final String TAG = RegisterActivity.class.getSimpleName();
     private SQLiteHandler db;
     private SessionManager session;
@@ -70,7 +72,7 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        //setSupportActionBar(toolbar);
+        setSupportActionBar(toolbar);
 
         // SqLite database handler
         db = new SQLiteHandler(getApplicationContext());
@@ -83,23 +85,23 @@ public class MainActivity extends AppCompatActivity
             logoutUser();
         }
 
-       /* FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
-        });*/
+        });
 
-      /*  DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);*/
+        navigationView.setNavigationItemSelectedListener(this);
         // Progress dialog
         pDialog = new ProgressDialog(this);
         pDialog.setCancelable(false);
@@ -141,12 +143,12 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-      /* DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+       DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
-        }*/
+        }
     }
 
     @Override
@@ -179,6 +181,10 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_camera) {
             // Handle the camera action
+            // Launching the login activity
+            Intent intent = new Intent(MainActivity.this,AddBeerActivity.class);
+            startActivity(intent);
+            finish();
         } else if (id == R.id.nav_gallery) {
             logoutUser();
 
@@ -192,8 +198,8 @@ public class MainActivity extends AppCompatActivity
 
         }
 
-       // DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-       // drawer.closeDrawer(GravityCompat.START);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
@@ -216,7 +222,7 @@ public class MainActivity extends AppCompatActivity
         // Tag used to cancel the request
         String tag_string_req = "req_login";
 
-        pDialog.setMessage("Cargando lista de birras...");
+        pDialog.setMessage("Trayendo lista de birras...");
         showDialog();
 
         StringRequest strReq = new StringRequest(Request.Method.GET,
@@ -318,6 +324,8 @@ public class MainActivity extends AppCompatActivity
         }
 
     }
+
+
 
     private void showDialog() {
         if (!pDialog.isShowing())

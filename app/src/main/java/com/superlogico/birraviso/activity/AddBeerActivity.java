@@ -17,22 +17,21 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.android.volley.Request;
-import com.android.volley.Request.Method;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.superlogico.birraviso.MainActivity;
+import com.superlogico.birraviso.R;
+import com.superlogico.birraviso.app.AppConfig;
+import com.superlogico.birraviso.app.AppController;
+import com.superlogico.birraviso.helper.SQLiteHandler;
+import com.superlogico.birraviso.helper.SessionManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
-import com.superlogico.birraviso.*;
-import com.superlogico.birraviso.R;
-import com.superlogico.birraviso.app.AppConfig;
-import com.superlogico.birraviso.app.AppController;
-import com.superlogico.birraviso.helper.SQLiteHandler;
-import com.superlogico.birraviso.helper.SessionManager;
 
 public class AddBeerActivity extends Activity{
 
@@ -47,6 +46,8 @@ public class AddBeerActivity extends Activity{
     private static final String BEER_CONTACT_INFO = "contact";
     private static final String BEER_GEO_X = "geo_x";
     private static final String BEER_GEO_Y = "geo_y";
+
+    private static final String KEY_UID = "uid";
 
     private static final String TAG = RegisterActivity.class.getSimpleName();
     private Button btnLogin;
@@ -95,6 +96,9 @@ public class AddBeerActivity extends Activity{
         inputAlcohol = (EditText) findViewById(R.id.alcohol);
         inputDescrpition = (EditText) findViewById(R.id.description);
         btnLogin = (Button) findViewById(R.id.btnLogin);
+
+        // SQLite database handler
+        db = new SQLiteHandler(getApplicationContext());
 
         //Creating the instance of ArrayAdapter containing list of beer styles
         ArrayAdapter<String> adapter = new ArrayAdapter<String>
@@ -179,7 +183,14 @@ public class AddBeerActivity extends Activity{
                     boolean error = jObj.getBoolean("error");
 
                     // Check for error node in json
-                    // if (!error) {
+                     if (!error) {
+                         db.addBeer(addName, addTrademark, addStyle, addIbu, addAlcohol, addSrm, addDescription, addOthers, "", "", "");
+                         // Launch main activity
+                         Intent intent = new Intent(AddBeerActivity.this,
+                                 MainActivity.class);
+                         startActivity(intent);
+                         finish();
+                     }
 
 
                 } catch (JSONException e) {
@@ -220,7 +231,9 @@ public class AddBeerActivity extends Activity{
             @Override
                 public Map<String, String> getHeaders()  {
                 Map<String,String> params =  new HashMap<>();
-                params.put("Authorization", ((AppController) this.getApplication()).getCurrentUniqueId());
+                HashMap<String, String> userDetails = db.getUserDetails();
+                String unique_id = userDetails.get(KEY_UID);
+                params.put("Authorization", unique_id);
                 //..add other headers
                 return params;
             }

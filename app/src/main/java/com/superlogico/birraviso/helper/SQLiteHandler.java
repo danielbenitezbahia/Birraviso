@@ -50,6 +50,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     private static final String KEY_EMAIL = "email";
     private static final String KEY_UID = "uid";
     private static final String KEY_CREATED_AT = "created_at";
+    SQLiteDatabase db;
 
 
 
@@ -87,6 +88,21 @@ public class SQLiteHandler extends SQLiteOpenHelper {
 
         // Create tables again
         onCreate(db);
+    }
+
+    public void createTables() {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_BEER);
+        String CREATE_BEER_TABLE = "CREATE TABLE " + TABLE_BEER + "("
+                + BEER_ID + " INTEGER PRIMARY KEY," + BEER_NAME + " TEXT,"
+                + BEER_TRADEMARK + " TEXT," + BEER_STYLE + " TEXT, "
+                + BEER_IBU + " TEXT, " + BEER_ALCOHOL + " TEXT, "+ BEER_SMR + " TEXT, "
+                + BEER_DESCRIPTION + " TEXT,"+ BEER_OTHERS + " TEXT," + BEER_CONTACT_INFO
+                + " TEXT, "+ BEER_GEO_X + " TEXT, " + BEER_GEO_Y + " TEXT" + " )";
+        db.execSQL(CREATE_BEER_TABLE);
+
+        Log.d(TAG, "Database tables created");
     }
 
     /**
@@ -180,7 +196,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     public ArrayList<Beer> getAllBeers() {
 
         ArrayList<Beer> beerList = new ArrayList<Beer>();
-        String selectQuery = "SELECT  * FROM " + TABLE_BEER;
+        String selectQuery = "SELECT * FROM " + TABLE_BEER;
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -212,7 +228,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     public void deleteBeers() {
         SQLiteDatabase db = this.getWritableDatabase();
         // Delete All Rows
-        db.delete(TABLE_BEER, null, null);
+       // db.delete(TABLE_BEER, null, null);
         db.close();
 
         Log.d(TAG, "Deleted all user info from sqlite");

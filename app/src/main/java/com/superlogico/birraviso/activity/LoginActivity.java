@@ -18,18 +18,18 @@ import com.android.volley.Request.Method;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.superlogico.birraviso.MainActivity;
+import com.superlogico.birraviso.R;
+import com.superlogico.birraviso.app.AppConfig;
+import com.superlogico.birraviso.app.AppController;
+import com.superlogico.birraviso.helper.SQLiteHandler;
+import com.superlogico.birraviso.helper.SessionManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
-import com.superlogico.birraviso.*;
-import com.superlogico.birraviso.R;
-import com.superlogico.birraviso.app.AppConfig;
-import com.superlogico.birraviso.app.AppController;
-import com.superlogico.birraviso.helper.SQLiteHandler;
-import com.superlogico.birraviso.helper.SessionManager;
 
 public class LoginActivity extends Activity {
     private static final String TAG = RegisterActivity.class.getSimpleName();
@@ -134,6 +134,7 @@ public class LoginActivity extends Activity {
 
                         // Now store the user in SQLite
                         String uid = jObj.getString("uid");
+                        appController.getInstance().setCurrentUniqueId(uid);
 
                         JSONObject user = jObj.getJSONObject("user");
                         String name = user.getString("name");

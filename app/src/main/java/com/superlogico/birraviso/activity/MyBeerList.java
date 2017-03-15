@@ -148,7 +148,10 @@ public class MyBeerList extends Activity{
 
                     // Check for error node in json
                     if (!error) {
-                        saveAllBeers(jObj);
+
+
+                        JSONObject beers = jObj.getJSONObject("beers");
+                        saveAllBeers(beers);
                         prepareBeerData();
 
                     }

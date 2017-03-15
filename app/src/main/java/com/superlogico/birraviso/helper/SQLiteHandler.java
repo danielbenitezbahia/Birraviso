@@ -72,7 +72,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
 
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_BEER);
         String CREATE_BEER_TABLE = "CREATE TABLE " + TABLE_BEER + "("
-                + BEER_ID + " INTEGER PRIMARY KEY," + BEER_NAME + " TEXT,"
+                + BEER_ID + " INTEGER," + BEER_NAME + " TEXT,"
                 + BEER_TRADEMARK + " TEXT," + BEER_STYLE + " TEXT, "
                 + BEER_IBU + " TEXT, " + BEER_ALCOHOL + " TEXT, "+ BEER_SMR + " TEXT, "
                 + BEER_DESCRIPTION + " TEXT,"+ BEER_OTHERS + " TEXT," + BEER_CONTACT_INFO

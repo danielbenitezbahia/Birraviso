@@ -10,7 +10,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+
 import com.superlogico.birraviso.model.Beer;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -40,6 +42,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     private static final String BEER_CONTACT_INFO = "contact";
     private static final String BEER_GEO_X = "geo_x";
     private static final String BEER_GEO_Y = "geo_y";
+    private static final String BEER_UID = "unique_id";
 
 
     private static final String TABLE_USER = "user";
@@ -164,12 +167,15 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     /**
      * Storing beer details in database
      * */
-    public void addBeer(String name, String trademark, String style, String ibu,
+    public void addBeer(String idbackend, String name, String trademark, String style, String ibu,
                         String alcohol, String srm, String description, String others,
                         String contact, String geo_x, String geo_y) {
+
+        int idb = Integer.valueOf(idbackend);
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
+        values.put(BEER_ID, idb);
         values.put(BEER_NAME, name);
         values.put(BEER_TRADEMARK, trademark);
         values.put(BEER_STYLE, style);
@@ -190,13 +196,76 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     }
 
     /**
+     * Storing beer details in database
+     * */
+    public void addMyBeer(String idbackend, String name, String trademark, String style, String ibu,
+                        String alcohol, String srm, String description, String others,
+                        String contact, String geo_x, String geo_y, String uid) {
+
+        int idb = Integer.valueOf(idbackend);
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(BEER_ID, idb);
+        values.put(BEER_NAME, name);
+        values.put(BEER_TRADEMARK, trademark);
+        values.put(BEER_STYLE, style);
+        values.put(BEER_IBU, ibu);
+        values.put(BEER_ALCOHOL, alcohol);
+        values.put(BEER_SMR, srm);
+        values.put(BEER_DESCRIPTION, description);
+        values.put(BEER_OTHERS, others);
+        values.put(BEER_CONTACT_INFO, contact);
+        values.put(BEER_GEO_X, geo_x);
+        values.put(BEER_GEO_Y, geo_y);
+        values.put(BEER_UID, uid);
+
+        // Inserting Row
+        long id = db.insert(TABLE_BEER, null, values);
+        db.close(); // Closing database connection
+
+        Log.d(TAG, "New my beer inserted into sqlite: " + id);
+    }
+
+    /**
      * Getting beers data from database
      * */
-
     public ArrayList<Beer> getAllBeers() {
 
         ArrayList<Beer> beerList = new ArrayList<Beer>();
         String selectQuery = "SELECT * FROM " + TABLE_BEER;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        // Move to first row
+        cursor.moveToFirst();
+        Beer beer;
+        beer = new Beer(cursor.getString(1), cursor.getString(2) , cursor.getString(3), cursor.getString(4), cursor.getString(5),
+                cursor.getString(6), cursor.getString(7), cursor.getString(8), cursor.getString(9), cursor.getString(10),
+                cursor.getString(11));
+        beerList.add(beer);
+        while (cursor.moveToNext()) {
+
+            beer = new Beer(cursor.getString(1), cursor.getString(2) , cursor.getString(3), cursor.getString(4), cursor.getString(5),
+                    cursor.getString(6), cursor.getString(7), cursor.getString(8), cursor.getString(9), cursor.getString(10),
+                    cursor.getString(11));
+            beerList.add(beer);
+        }
+        cursor.close();
+        db.close();
+        // return user
+        Log.d(TAG, "Fetching beer from Sqlite: " + beerList.toString());
+
+        return beerList;
+    }
+
+    /**
+     * Getting beers data from database
+     * */
+    public ArrayList<Beer> getAllMyBeers(String uid) {
+
+        ArrayList<Beer> beerList = new ArrayList<Beer>();
+        String selectQuery = "SELECT * FROM " + TABLE_BEER + " WHERE id";
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -234,13 +303,24 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         Log.d(TAG, "Deleted all user info from sqlite");
     }
 
-    public void deleteBeerById() {
+    public void deleteBeerById(String id) {
         SQLiteDatabase db = this.getWritableDatabase();
         // Delete All Rows
-        db.delete(TABLE_USER, null, null);
+        //db.delete
+        db.delete(TABLE_BEER, "id=?", new String[]{id});
         db.close();
+    }
 
+    public boolean existsBeer(String id) {
 
+        ArrayList<Beer> beerList = new ArrayList<Beer>();
+        String selectQuery = "SELECT * FROM " + TABLE_BEER + " WHERE id =" + id;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        // Move to first row
+        cursor.moveToFirst();
+        return cursor.getCount() > 0;
     }
 
 }

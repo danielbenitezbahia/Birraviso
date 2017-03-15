@@ -31,6 +31,7 @@ import com.google.android.gms.appindexing.Thing;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.superlogico.birraviso.activity.AddBeerActivity;
 import com.superlogico.birraviso.activity.LoginActivity;
+import com.superlogico.birraviso.activity.MyBeerList;
 import com.superlogico.birraviso.activity.RegisterActivity;
 import com.superlogico.birraviso.adapter.BeerAdapter;
 import com.superlogico.birraviso.adapter.DividerItemDecoration;
@@ -187,6 +188,9 @@ public class MainActivity extends AppCompatActivity
             logoutUser();
 
         } else if (id == R.id.nav_slideshow) {
+            Intent intent = new Intent(MainActivity.this,MyBeerList.class);
+            startActivity(intent);
+            finish();
 
         } else if (id == R.id.nav_manage) {
 
@@ -233,38 +237,10 @@ public class MainActivity extends AppCompatActivity
 
                 try {
                     JSONObject jObj = new JSONObject(response);
-                    // boolean error = jObj.getBoolean("error");
-
-                    // Check for error node in json
-                    // if (!error) {
 
                     saveAllBeers(jObj);
                     prepareBeerData();
 
-                    // Now store the user in SQLite
-                    // String uid = jObj.getString("uid");
-
-                        /*JSONObject user = jObj.getJSONObject("user");
-                        String name = user.getString("name");
-                        String email = user.getString("email");
-                        String created_at = user
-                                .getString("created_at");
-
-                        // Inserting row in users table
-                        db.addUser(name, email, uid, created_at);*/
-
-                    // aca va el parseo del JSON y guardada en base de datos
-
-                    // Launch main activity
-                    //     Intent intent = new Intent(GetBeerList.this,
-                    //           MainActivity.class);
-                    // startActivity(intent);
-                    // finish();
-                    //  } else {
-                    //     // Error in login. Get the error message
-                    //     String errorMsg = jObj.getString("error_msg");
-                    //     Toast.makeText(getApplicationContext(),
-                    //             errorMsg, Toast.LENGTH_LONG).show();
 
                 } catch (JSONException e) {
                     // JSON error
@@ -299,7 +275,7 @@ public class MainActivity extends AppCompatActivity
             String key = iter.next();
             try {
                 JSONObject beer = json.getJSONObject(key);
-                String name = key;
+                String name = beer.getString("marca");
                 String trademark = beer.getString("marca");
                 String style = beer.getString("estilo");
                 String ibu = beer.getString("ibu");
@@ -311,7 +287,7 @@ public class MainActivity extends AppCompatActivity
                 String geo_x = beer.getString("geo_x");
                 String geo_y = beer.getString("geo_y");
 
-                db.addBeer(name, trademark, style, ibu, alcohol, srm, description, others, contact, geo_x, geo_y);
+                db.addBeer(key, name, trademark, style, ibu, alcohol, srm, description, others, contact, geo_x, geo_y);
 
             } catch (JSONException e) {
                 Log.e(TAG, "JSON ERROR! " + e.getMessage());

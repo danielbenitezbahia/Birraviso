@@ -97,9 +97,6 @@ public class AddBeerActivity extends Activity{
         inputDescrpition = (EditText) findViewById(R.id.description);
         btnLogin = (Button) findViewById(R.id.btnLogin);
 
-        // SQLite database handler
-        db = new SQLiteHandler(getApplicationContext());
-
         //Creating the instance of ArrayAdapter containing list of beer styles
         ArrayAdapter<String> adapter = new ArrayAdapter<String>
                 (this,android.R.layout.select_dialog_item,beerStyles);
@@ -183,15 +180,16 @@ public class AddBeerActivity extends Activity{
                     boolean error = jObj.getBoolean("error");
 
                     // Check for error node in json
+                    String id = jObj.getString("id");
+
                      if (!error) {
-                         db.addBeer(addName, addTrademark, addStyle, addIbu, addAlcohol, addSrm, addDescription, addOthers, "", "", "");
+                         db.addBeer(id, addName, addTrademark, addStyle, addIbu, addAlcohol, addSrm, addDescription, addOthers, "", "", "");
                          // Launch main activity
                          Intent intent = new Intent(AddBeerActivity.this,
                                  MainActivity.class);
                          startActivity(intent);
                          finish();
                      }
-
 
                 } catch (JSONException e) {
                     // JSON error

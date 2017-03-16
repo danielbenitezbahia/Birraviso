@@ -101,6 +101,10 @@ public class AddBeerActivity extends Activity{
         ArrayAdapter<String> adapter = new ArrayAdapter<String>
                 (this,android.R.layout.select_dialog_item,beerStyles);
 
+        AutoCompleteTextView textView = (AutoCompleteTextView)
+                findViewById(R.id.style);
+        textView.setAdapter(adapter);
+
         // Progress dialog
         pDialog = new ProgressDialog(this);
         pDialog.setCancelable(false);

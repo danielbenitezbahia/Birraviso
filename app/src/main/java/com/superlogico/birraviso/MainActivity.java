@@ -31,7 +31,6 @@ import com.google.android.gms.appindexing.Thing;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.superlogico.birraviso.activity.AddBeerActivity;
 import com.superlogico.birraviso.activity.LoginActivity;
-import com.superlogico.birraviso.activity.MyBeerList;
 import com.superlogico.birraviso.activity.RegisterActivity;
 import com.superlogico.birraviso.adapter.BeerAdapter;
 import com.superlogico.birraviso.adapter.DividerItemDecoration;
@@ -46,8 +45,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -60,6 +61,8 @@ public class MainActivity extends AppCompatActivity
     private List<Beer> beerList = new ArrayList<>();
     private RecyclerView recyclerView;
     private BeerAdapter bAdapter;
+
+    private static final String KEY_UID = "uid";
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -134,8 +137,16 @@ public class MainActivity extends AppCompatActivity
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
-    private void prepareBeerData()    {
+    private void prepareBeerData(){
         beerList = db.getAllBeers();
+        bAdapter.setBeerList(beerList);
+        bAdapter.notifyDataSetChanged();
+    }
+
+    private void prepareMyBeersData(){
+        HashMap<String, String> userDetails = db.getUserDetails();
+        String unique_id = userDetails.get(KEY_UID);
+        beerList = db.getAllMyBeers(unique_id);
         bAdapter.setBeerList(beerList);
         bAdapter.notifyDataSetChanged();
     }
@@ -188,9 +199,10 @@ public class MainActivity extends AppCompatActivity
             logoutUser();
 
         } else if (id == R.id.nav_slideshow) {
-            Intent intent = new Intent(MainActivity.this,MyBeerList.class);
-            startActivity(intent);
-            finish();
+           //Intent intent = new Intent(MainActivity.this,MyBeerList.class);
+           // startActivity(intent);
+           // finish();
+            this.getMyBeerList();
 
         } else if (id == R.id.nav_manage) {
 
@@ -268,6 +280,77 @@ public class MainActivity extends AppCompatActivity
         AppController.getInstance().addToRequestQueue(strReq, tag_string_req);
     }
 
+    private void getMyBeerList() {
+
+        // Tag used to cancel the request
+        String tag_string_req = "req_login";
+
+        showDialog();
+
+        StringRequest strReq = new StringRequest(Request.Method.GET,
+                AppConfig.GET_BEER_LIST_BY_UID_URL, new Response.Listener<String>() {
+
+            @Override
+            public void onResponse(String response) {
+                Log.d(TAG, "Trayendo mis birras : " + response.toString());
+                hideDialog();
+
+                try {
+                    JSONObject jObj = new JSONObject(response);
+                    boolean error = jObj.getBoolean("error");
+
+                    // Check for error node in json
+                    if (!error) {
+
+
+                        JSONObject beers = jObj.getJSONObject("beers");
+                        String beerString = beers.toString();
+                        String corcheteAbre = "\\[";
+
+                        beers = new JSONObject(beerString.replaceAll(corcheteAbre,"{").replaceAll("\\]","}"));
+                        saveMyBeers(beers);
+                        prepareMyBeersData();
+
+                    }
+
+
+                } catch (JSONException e) {
+                    // JSON error
+                    e.printStackTrace();
+                    Toast.makeText(getApplicationContext(), "Json error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+
+            }
+        }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e(TAG, "Login Error: " + error.getMessage());
+                Toast.makeText(getApplicationContext(),
+                        error.getMessage(), Toast.LENGTH_LONG).show();
+                hideDialog();
+            }
+        }) {
+
+
+
+            @Override
+            public Map<String, String> getHeaders()  {
+                Map<String,String> params =  new HashMap<>();
+                HashMap<String, String> userDetails = db.getUserDetails();
+                String unique_id = userDetails.get(KEY_UID);
+                params.put("Authorization", unique_id);
+                //..add other headers
+                return params;
+            }
+
+        };
+
+        // Adding request to request queue
+        String a = "0";
+        AppController.getInstance().addToRequestQueue(strReq, tag_string_req);
+    }
+
     private void saveAllBeers(JSONObject json) {
         db.deleteBeers();
         Iterator<String> iter = json.keys();
@@ -299,8 +382,42 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    private void saveMyBeers(JSONObject json) {
+        db.deleteBeers();
+        HashMap<String, String> userDetails = db.getUserDetails();
+        String unique_id = userDetails.get(KEY_UID);
+        Iterator<String> iter = json.keys();
+        while (iter.hasNext()) {
+            String key = iter.next();
+            try {
+                JSONObject beer = json.getJSONObject(key);
+                String name = beer.getString("marca");
+                String trademark = beer.getString("marca");
+                String style = beer.getString("estilo");
+                String ibu = beer.getString("ibu");
+                String alcohol = beer.getString("alcohol");
+                String srm = beer.getString("srm");
+                String description = beer.getString("descripcion");
+                String others = beer.getString("otros");
+                String contact = beer.getString("contacto");
+                String geo_x = "";
+                String geo_y = "";
+                String uid = unique_id;
 
+                if (db.existsBeer(key)){
+                    db.deleteBeerById(key);
+                }
 
+                db.addMyBeer(key, name, trademark, style, ibu, alcohol, srm, description, others, contact, geo_x, geo_y, uid);
+
+            } catch (JSONException e) {
+                Log.e(TAG, "JSON ERROR! " + e.getMessage());
+                Toast.makeText(getApplicationContext(),
+                        e.getMessage(), Toast.LENGTH_LONG).show();
+                hideDialog();
+            }
+        }
+    }
     private void showDialog() {
         if (!pDialog.isShowing())
             pDialog.show();

@@ -214,11 +214,10 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         values.put(BEER_ALCOHOL, alcohol);
         values.put(BEER_SMR, srm);
         values.put(BEER_DESCRIPTION, description);
-        values.put(BEER_OTHERS, others);
+        values.put(BEER_OTHERS, uid);
         values.put(BEER_CONTACT_INFO, contact);
         values.put(BEER_GEO_X, geo_x);
         values.put(BEER_GEO_Y, geo_y);
-        values.put(BEER_UID, uid);
 
         // Inserting Row
         long id = db.insert(TABLE_BEER, null, values);
@@ -265,7 +264,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     public ArrayList<Beer> getAllMyBeers(String uid) {
 
         ArrayList<Beer> beerList = new ArrayList<Beer>();
-        String selectQuery = "SELECT * FROM " + TABLE_BEER + " WHERE id";
+        String selectQuery = "SELECT * FROM " + TABLE_BEER + " WHERE others = '" + uid + "'";
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -297,7 +296,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     public void deleteBeers() {
         SQLiteDatabase db = this.getWritableDatabase();
         // Delete All Rows
-       // db.delete(TABLE_BEER, null, null);
+        db.delete(TABLE_BEER, null, null);
         db.close();
 
         Log.d(TAG, "Deleted all user info from sqlite");

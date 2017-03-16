@@ -151,7 +151,11 @@ public class MyBeerList extends Activity{
 
 
                         JSONObject beers = jObj.getJSONObject("beers");
-                        saveAllBeers(beers);
+                        String beerString = beers.toString();
+                        String corcheteAbre = "\\[";
+
+                        beers = new JSONObject(beerString.replaceAll(corcheteAbre,"{").replaceAll("\\]","}"));
+                        saveMyBeers(beers);
                         prepareBeerData();
 
                     }
@@ -200,7 +204,7 @@ public class MyBeerList extends Activity{
         bAdapter.notifyDataSetChanged();
     }
 
-    private void saveAllBeers(JSONObject json) {
+    private void saveMyBeers(JSONObject json) {
         HashMap<String, String> userDetails = db.getUserDetails();
         String unique_id = userDetails.get(KEY_UID);
         Iterator<String> iter = json.keys();
@@ -217,15 +221,14 @@ public class MyBeerList extends Activity{
                 String description = beer.getString("descripcion");
                 String others = beer.getString("otros");
                 String contact = beer.getString("contacto");
-                String geo_x = beer.getString("geo_x");
-                String geo_y = beer.getString("geo_y");
-                String uid = beer.getString(unique_id);
+                String geo_x = "";
+                String geo_y = "";                ;
 
                 if (db.existsBeer(key)){
                     db.deleteBeerById(key);
                 }
 
-                db.addMyBeer(key, name, trademark, style, ibu, alcohol, srm, description, others, contact, geo_x, geo_y, uid);
+                db.addMyBeer(key, name, trademark, style, ibu, alcohol, srm, description, others, contact, geo_x, geo_y, unique_id);
 
             } catch (JSONException e) {
                 Log.e(TAG, "JSON ERROR! " + e.getMessage());
@@ -234,7 +237,6 @@ public class MyBeerList extends Activity{
                 hideDialog();
             }
         }
-
     }
 
     private void showDialog() {

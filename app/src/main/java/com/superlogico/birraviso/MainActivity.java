@@ -61,6 +61,7 @@ public class MainActivity extends AppCompatActivity
     private List<Beer> beerList = new ArrayList<>();
     private RecyclerView recyclerView;
     private BeerAdapter bAdapter;
+    private boolean homebrewerMode;
 
     private static final String KEY_UID = "uid";
     /**

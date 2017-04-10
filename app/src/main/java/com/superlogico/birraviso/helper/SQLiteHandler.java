@@ -180,7 +180,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         values.put(BEER_TRADEMARK, trademark);
         values.put(BEER_STYLE, style);
         values.put(BEER_IBU, ibu);
-        values.put(BEER_ALCOHOL, alcohol);
+      //  values.put(BEER_ALCOHOL, alcohol);
         values.put(BEER_SMR, srm);
         values.put(BEER_DESCRIPTION, description);
         values.put(BEER_OTHERS, others);
@@ -238,16 +238,24 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery(selectQuery, null);
         // Move to first row
         cursor.moveToFirst();
+        // Cursor parameter Order
+        // id, name, trademark, style, ibu, alcohol, srm, description, others, contact , x, y
+        //
+        // Beer parameter order
+        // String beer_id, String user_id, String name, String style, String trademark, String ibu,
+        // String drb, String alcohol, String description, String contact, String others
         Beer beer;
-        beer = new Beer(cursor.getString(1), cursor.getString(2) , cursor.getString(3), cursor.getString(4), cursor.getString(5),
-                cursor.getString(6), cursor.getString(7), cursor.getString(8), cursor.getString(9), cursor.getString(10),
-                cursor.getString(11));
+        HashMap<String, String> userDetails = getUserDetails();
+        String unique_id = userDetails.get(KEY_UID);
+        beer = new Beer(cursor.getString(0), unique_id , cursor.getString(1), cursor.getString(3), cursor.getString(2),
+                cursor.getString(4), cursor.getString(5), cursor.getString(6), cursor.getString(7), cursor.getString(9),
+                cursor.getString(8));
         beerList.add(beer);
         while (cursor.moveToNext()) {
 
-            beer = new Beer(cursor.getString(1), cursor.getString(2) , cursor.getString(3), cursor.getString(4), cursor.getString(5),
-                    cursor.getString(6), cursor.getString(7), cursor.getString(8), cursor.getString(9), cursor.getString(10),
-                    cursor.getString(11));
+            beer = new Beer(cursor.getString(0), unique_id , cursor.getString(1), cursor.getString(3), cursor.getString(2),
+                    cursor.getString(4), cursor.getString(5), cursor.getString(6), cursor.getString(7), cursor.getString(9),
+                    cursor.getString(8));
             beerList.add(beer);
         }
         cursor.close();
@@ -271,15 +279,13 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         // Move to first row
         cursor.moveToFirst();
         Beer beer;
-        beer = new Beer(cursor.getString(1), cursor.getString(2) , cursor.getString(3), cursor.getString(4), cursor.getString(5),
-                cursor.getString(6), cursor.getString(7), cursor.getString(8), cursor.getString(9), cursor.getString(10),
-                cursor.getString(11));
+        beer = new Beer(cursor.getString(0), uid, cursor.getString(1) , cursor.getString(3), cursor.getString(2), cursor.getString(4),
+                cursor.getString(6), cursor.getString(5), cursor.getString(7), cursor.getString(9), cursor.getString(8));
         beerList.add(beer);
         while (cursor.moveToNext()) {
 
-            beer = new Beer(cursor.getString(1), cursor.getString(2) , cursor.getString(3), cursor.getString(4), cursor.getString(5),
-                    cursor.getString(6), cursor.getString(7), cursor.getString(8), cursor.getString(9), cursor.getString(10),
-                    cursor.getString(11));
+            beer = new Beer(cursor.getString(0), uid, cursor.getString(1) , cursor.getString(3), cursor.getString(2), cursor.getString(4),
+                    cursor.getString(6), cursor.getString(5), cursor.getString(7), cursor.getString(9), cursor.getString(8));
             beerList.add(beer);
         }
         cursor.close();

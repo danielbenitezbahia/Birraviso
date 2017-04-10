@@ -19,6 +19,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -32,6 +33,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.superlogico.birraviso.activity.AddBeerActivity;
 import com.superlogico.birraviso.activity.LoginActivity;
 import com.superlogico.birraviso.activity.RegisterActivity;
+import com.superlogico.birraviso.activity.UpdateBeerActivity;
 import com.superlogico.birraviso.adapter.BeerAdapter;
 import com.superlogico.birraviso.adapter.DividerItemDecoration;
 import com.superlogico.birraviso.adapter.RecyclerTouchListener;
@@ -64,6 +66,16 @@ public class MainActivity extends AppCompatActivity
     private boolean homebrewerMode;
 
     private static final String KEY_UID = "uid";
+    private static final String BEER_NAME = "name";
+    private static final String BEER_TRADEMARK = "trademark";
+    private static final String BEER_STYLE = "style";
+    private static final String BEER_IBU = "ibu";
+    private static final String BEER_ALCOHOL = "alcohol";
+    private static final String BEER_SRM = "srm";
+    private static final String BEER_DESCRIPTION = "description";
+    private static final String BEER_OTHERS = "others";
+    private static final String BEER_CONTACT_INFO = "contact";
+    private static final String TRUE_HB = "true";
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -108,7 +120,16 @@ public class MainActivity extends AppCompatActivity
         // Progress dialog
         pDialog = new ProgressDialog(this);
         pDialog.setCancelable(false);
-        this.getBeerList();
+
+        Intent myIntent = getIntent(); // gets the previously created intent
+        String isHomebrewer = myIntent.getStringExtra("homebrewer");
+        if(TRUE_HB.equals(isHomebrewer)){
+            homebrewerMode = true;
+            this.getMyBeerList();
+        }else{
+            this.getBeerList();
+        }
+
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
 
         bAdapter = new BeerAdapter(beerList);
@@ -124,7 +145,22 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view, int position) {
                 Beer beer = beerList.get(position);
-                Toast.makeText(getApplicationContext(), beer.getName() + " is selected!", Toast.LENGTH_SHORT).show();
+                if(homebrewerMode){
+                    Intent intent = new Intent(MainActivity.this,UpdateBeerActivity.class);
+                    intent.putExtra(KEY_UID, beer.getId());
+                    intent.putExtra(BEER_NAME, beer.getName());
+                    intent.putExtra(BEER_TRADEMARK, beer.getTrademark());
+                    intent.putExtra(BEER_STYLE, beer.getStyle());
+                    intent.putExtra(BEER_IBU, beer.getIbu());
+                    intent.putExtra(BEER_ALCOHOL, beer.getAlcohol());
+                    intent.putExtra(BEER_SRM, beer.getDrb());
+                    intent.putExtra(BEER_DESCRIPTION, beer.getDescription());
+                    intent.putExtra(BEER_NAME, beer.getName());
+
+                    startActivity(intent);
+                    finish();
+                }
+               // Toast.makeText(getApplicationContext(), beer.getName() + " is selected! id es: " + beer.getId(), Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -311,6 +347,7 @@ public class MainActivity extends AppCompatActivity
                         beers = new JSONObject(beerString.replaceAll(corcheteAbre,"{").replaceAll("\\]","}"));
                         saveMyBeers(beers);
                         prepareMyBeersData();
+                        homebrewerMode = true;
 
                     }
 
@@ -359,6 +396,7 @@ public class MainActivity extends AppCompatActivity
             String key = iter.next();
             try {
                 JSONObject beer = json.getJSONObject(key);
+                String id = beer.getString("id");
                 String name = beer.getString("marca");
                 String trademark = beer.getString("marca");
                 String style = beer.getString("estilo");
@@ -371,7 +409,7 @@ public class MainActivity extends AppCompatActivity
                 String geo_x = beer.getString("geo_x");
                 String geo_y = beer.getString("geo_y");
 
-                db.addBeer(key, name, trademark, style, ibu, alcohol, srm, description, others, contact, geo_x, geo_y);
+                db.addBeer(id, name, trademark, style, ibu, alcohol, srm, description, others, contact, geo_x, geo_y);
 
             } catch (JSONException e) {
                 Log.e(TAG, "JSON ERROR! " + e.getMessage());
@@ -405,9 +443,9 @@ public class MainActivity extends AppCompatActivity
                 String geo_y = "";
                 String uid = unique_id;
 
-                if (db.existsBeer(key)){
-                    db.deleteBeerById(key);
-                }
+              //  if (db.existsBeer(key)){
+              //      db.deleteBeerById(key);
+              //  }
 
                 db.addMyBeer(key, name, trademark, style, ibu, alcohol, srm, description, others, contact, geo_x, geo_y, uid);
 

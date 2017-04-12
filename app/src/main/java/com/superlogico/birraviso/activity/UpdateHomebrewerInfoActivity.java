@@ -34,7 +34,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
-public class UpdateBeerActivity extends Activity {
+public class UpdateHomebrewerInfoActivity extends Activity {
 
     private static final String BEER_NAME = "name";
     private static final String BEER_TRADEMARK = "trademark";
@@ -166,7 +166,7 @@ public class UpdateBeerActivity extends Activity {
         // Check if user is already logged in or not
         if (!session.isLoggedIn()) {
             // User is already logged in. Take him to main activity
-            Intent intent = new Intent(UpdateBeerActivity.this,MainActivity.class);
+            Intent intent = new Intent(UpdateHomebrewerInfoActivity.this,MainActivity.class);
             startActivity(intent);
             finish();
         }
@@ -174,7 +174,7 @@ public class UpdateBeerActivity extends Activity {
         btnCancel.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View view) {
-                Intent intent = new Intent(UpdateBeerActivity.this,
+                Intent intent = new Intent(UpdateHomebrewerInfoActivity.this,
                         MainActivity.class);
                 intent.putExtra("homebrewer","true");
                 startActivity(intent);
@@ -248,7 +248,7 @@ public class UpdateBeerActivity extends Activity {
                     if (!error) {
                         //db.addBeer(id, addName, addTrademark, addStyle, addIbu, addAlcohol, addSrm, addDescription, addOthers, "", "", "");
                         // Launch main activity
-                        Intent intent = new Intent(UpdateBeerActivity.this,
+                        Intent intent = new Intent(UpdateHomebrewerInfoActivity.this,
                                 MainActivity.class);
                         intent.putExtra("homebrewer","true");
                         startActivity(intent);

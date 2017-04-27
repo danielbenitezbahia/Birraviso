@@ -16,7 +16,7 @@ public class AppConfig {
 
     public static String ADD_BEER_URL = "http://timbaviso.esy.es/android_login_api/add_beer.php";
 
-    public static String DELETE_BEER_URL = "http://timbaviso.esy.es/android_login_api/delete_beer.php";
+    public static String DELETE_BEER_LIST_URL = "http://timbaviso.esy.es/android_login_api/delete_list_of_beers.php";
 
     public static String UPDATE_BEER_URL = "http://timbaviso.esy.es/android_login_api/update_beer.php";
 

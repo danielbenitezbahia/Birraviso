@@ -6,6 +6,7 @@ package com.superlogico.birraviso.model;
 
 public class Beer {
     private String id, user_id, name, style, trademark, ibu, drb, alcohol, description, contact, others;
+    private boolean isSelected, isVisible;
 
     public Beer() {
     }
@@ -110,5 +111,20 @@ public class Beer {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public boolean isSelected(){
+        return this.isSelected;
+    }
+    public void setSelected(boolean selected){
+        this.isSelected = selected;
+    }
+
+    public boolean isVisible(){
+        return isVisible;
+    }
+
+    public void setVisible(boolean visible){
+        this.isVisible = visible;
     }
 }

@@ -1,6 +1,8 @@
 package com.superlogico.birraviso;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -15,6 +17,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -57,6 +60,7 @@ public class MainActivity extends AppCompatActivity
 
 
     private static final String TAG = RegisterActivity.class.getSimpleName();
+    private static final String ID_BEERS_TO_DELETE = "id_beers_to_delete";
     private SQLiteHandler db;
     private SessionManager session;
     private ProgressDialog pDialog;
@@ -64,6 +68,8 @@ public class MainActivity extends AppCompatActivity
     private RecyclerView recyclerView;
     private BeerAdapter bAdapter;
     private boolean homebrewerMode;
+    private boolean deleteMode;
+    private MenuItem deleteIcon;
 
     private static final String KEY_UID = "uid";
     private static final String BEER_NAME = "name";
@@ -81,6 +87,8 @@ public class MainActivity extends AppCompatActivity
      * See https://g.co/AppIndexing/AndroidStudio for more information.
      */
     private GoogleApiClient client;
+    private View checkbox;
+    private ActionBarDrawerToggle toggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,13 +118,29 @@ public class MainActivity extends AppCompatActivity
         });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+         toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+                    if(homebrewerMode && deleteMode){
+                        deleteModeOff();
+                    }else {
+                        if (drawer.isDrawerOpen(GravityCompat.START)) {
+                            drawer.closeDrawer(GravityCompat.START);
+                        } else {
+                            drawer.openDrawer(GravityCompat.START);
+                        }
+                    }
+            }
+        });
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
         // Progress dialog
         pDialog = new ProgressDialog(this);
         pDialog.setCancelable(false);
@@ -145,7 +169,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view, int position) {
                 Beer beer = beerList.get(position);
-                if(homebrewerMode){
+                if(homebrewerMode && !deleteMode){
                     Intent intent = new Intent(MainActivity.this,UpdateBeerActivity.class);
                     intent.putExtra(KEY_UID, beer.getId());
                     intent.putExtra(BEER_NAME, beer.getName());
@@ -166,13 +190,35 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onLongClick(View view, int position) {
 
+                if(homebrewerMode) {
+                    setDeleteMode();
+                }
             }
+
         }));
 
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
+
+    private void  setDeleteMode(){
+        deleteMode = true;
+       // checkbox = findViewById(R.id.chkSelected);
+       // checkbox.setVisibility(View.VISIBLE);
+        for (int i = 0; i <beerList.size() ; i++) {
+            beerList.get(i).setVisible(true);
+        }
+        bAdapter.notifyDataSetChanged();
+        setBackArrowState(true);
+        invalidateOptionsMenu();
+    }
+
+    private void setBackArrowState(boolean state) {
+        getSupportActionBar().setDisplayHomeAsUpEnabled(state);
+        getSupportActionBar().setDisplayShowHomeEnabled(state);
+    }
+
 
     private void prepareBeerData(){
         beerList = db.getAllBeers();
@@ -188,20 +234,78 @@ public class MainActivity extends AppCompatActivity
         bAdapter.notifyDataSetChanged();
     }
 
+    private void deleteMySelectedBeers(){
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int choice) {
+                switch (choice) {
+                    case DialogInterface.BUTTON_POSITIVE:
+                            //String rootDir = FileUtils.getImagesDir(getActivity());
+                            //boolean fileWasDeleted = FileUtils.deleteFile(rootDir + "/" + imageFilename);
+                            deleteSelectedBeers();
+                               // Toast.makeText(getActivity(), "The file was deleted", Toast.LENGTH_SHORT).show();
+                        break;
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        break;
+                }
+            }
+        };
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setMessage("¿Querés borrar estas birras: ?")
+                .setPositiveButton("Yes", dialogClickListener)
+                .setNegativeButton("No", dialogClickListener).show();
+
+    }
+
     @Override
     public void onBackPressed() {
        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            if(homebrewerMode && deleteMode){
+                deleteModeOff();
+            } else {
+                super.onBackPressed();
+            }
         }
+
+    }
+
+    private void deleteSelectedBeers() {
+        ArrayList<String> beersToDelete = new ArrayList<String>();
+        for(int i = 0; i < beerList.size();i++){
+            if(beerList.get(i).isSelected()){
+                beersToDelete.add(beerList.get(i).getId());
+            }
+        }
+        deleteMyBeerList(beersToDelete);
+    }
+
+    private void deleteModeOff(){
+        deleteMode = false;
+        checkbox = findViewById(R.id.chkSelected);
+        checkbox.setVisibility(View.GONE);
+        for (int i = 0; i <beerList.size() ; i++) {
+            beerList.get(i).setVisible(false);
+        }
+        bAdapter.notifyDataSetChanged();
+        setBackArrowState(false);
+        toggle.syncState();
+        invalidateOptionsMenu();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
+        deleteIcon = menu.findItem(R.id.delete_icon);
+        if(deleteMode){
+            deleteIcon.setVisible(true);
+        }else{
+            deleteIcon.setVisible(false);
+        }
         return true;
     }
 
@@ -217,7 +321,13 @@ public class MainActivity extends AppCompatActivity
             return true;
         }
 
-        return super.onOptionsItemSelected(item);
+        switch (id) {
+            case R.id.delete_icon:
+                deleteMySelectedBeers();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -318,12 +428,10 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void getMyBeerList() {
-
         // Tag used to cancel the request
         String tag_string_req = "req_login";
 
         showDialog();
-
         StringRequest strReq = new StringRequest(Request.Method.GET,
                 AppConfig.GET_BEER_LIST_BY_UID_URL, new Response.Listener<String>() {
 
@@ -331,15 +439,11 @@ public class MainActivity extends AppCompatActivity
             public void onResponse(String response) {
                 Log.d(TAG, "Trayendo mis birras : " + response.toString());
                 hideDialog();
-
                 try {
                     JSONObject jObj = new JSONObject(response);
                     boolean error = jObj.getBoolean("error");
-
                     // Check for error node in json
                     if (!error) {
-
-
                         JSONObject beers = jObj.getJSONObject("beers");
                         String beerString = beers.toString();
                         String corcheteAbre = "\\[";
@@ -348,16 +452,12 @@ public class MainActivity extends AppCompatActivity
                         saveMyBeers(beers);
                         prepareMyBeersData();
                         homebrewerMode = true;
-
                     }
-
-
                 } catch (JSONException e) {
                     // JSON error
                     e.printStackTrace();
                     Toast.makeText(getApplicationContext(), "Json error: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 }
-
             }
         }, new Response.ErrorListener() {
 
@@ -457,6 +557,76 @@ public class MainActivity extends AppCompatActivity
             }
         }
     }
+
+    private void deleteMyBeerList(ArrayList<String> beersToDelete) {
+        final ArrayList<String> idBeersToDelete = beersToDelete;
+
+        // Tag used to cancel the request
+        String tag_string_req = "req_login";
+
+        showDialog();
+
+        StringRequest strReq = new StringRequest(Request.Method.POST,
+                AppConfig.DELETE_BEER_LIST_URL,new Response.Listener<String>() {
+
+            @Override
+            public void onResponse(String response) {
+                Log.d(TAG,"Borrando lista de birras : " + response.toString());
+                hideDialog();
+
+                try {
+                    JSONObject jObj = new JSONObject(response);
+                    boolean error = jObj.getBoolean("error");
+
+                    if (!error) {
+                        //db.addBeer(id, addName, addTrademark, addStyle, addIbu, addAlcohol, addSrm, addDescription, addOthers, "", "", "");
+                        // Launch main activity
+                        showDialog();
+                        getMyBeerList();
+
+
+                    }
+                } catch (JSONException e) {
+                    // JSON error
+                    e.printStackTrace();
+                    Toast.makeText(getApplicationContext(),"Json error: " + e.getMessage(),Toast.LENGTH_LONG).show();
+                }
+            }
+        },new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e(TAG,"Error: " + error.getMessage());
+                Toast.makeText(getApplicationContext(),
+                        error.getMessage(),Toast.LENGTH_LONG).show();
+                hideDialog();
+            }
+        }) {
+
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                String ids = TextUtils.join(",", idBeersToDelete);
+                params.put(ID_BEERS_TO_DELETE, ids);
+                params.put(BEER_CONTACT_INFO,"");
+                return params;
+            }
+
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> params = new HashMap<>();
+                HashMap<String, String> userDetails = db.getUserDetails();
+                String unique_id = userDetails.get(KEY_UID);
+                params.put("Authorization",unique_id);
+                return params;
+            }
+        };
+
+        // Adding request to request queue
+        String a = "0";
+        AppController.getInstance().addToRequestQueue(strReq,tag_string_req);
+    }
+
     private void showDialog() {
         if (!pDialog.isShowing())
             pDialog.show();

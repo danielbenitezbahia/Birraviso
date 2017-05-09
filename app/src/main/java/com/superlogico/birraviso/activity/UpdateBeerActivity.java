@@ -179,11 +179,9 @@ public class UpdateBeerActivity extends Activity {
                 intent.putExtra("homebrewer","true");
                 startActivity(intent);
                 finish();
-
             }
 
         });
-
 
         btnAddUpdateBeer.setOnClickListener(new View.OnClickListener() {
 
@@ -195,8 +193,6 @@ public class UpdateBeerActivity extends Activity {
                 String srm = inputSrm.getText().toString().trim();
                 String ibu = inputIbu.getText().toString().trim();
                 String trademark = inputTrademark.getText().toString().trim();
-
-
                 // Check for empty data in the form
                 if (!name.isEmpty() && !style.isEmpty()) {
                     // add beer

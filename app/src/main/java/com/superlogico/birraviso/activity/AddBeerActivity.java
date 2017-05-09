@@ -51,7 +51,7 @@ public class AddBeerActivity extends Activity {
     private static final String KEY_UID = "uid";
 
     private static final String TAG = RegisterActivity.class.getSimpleName();
-    private Button btnLogin;
+    private Button btnAddBeer;
     private Button btnLinkToRegister;
     private EditText inputNamebeer;
     private EditText inputTrademark;
@@ -97,7 +97,7 @@ public class AddBeerActivity extends Activity {
         inputSrm = (EditText) findViewById(R.id.srm);
         inputAlcohol = (EditText) findViewById(R.id.alcohol);
         inputDescrpition = (EditText) findViewById(R.id.description);
-        btnLogin = (Button) findViewById(R.id.btnLogin);
+        btnAddBeer = (Button) findViewById(R.id.btnAddUpdateBeer);
 
 
         //Creating the instance of ArrayAdapter containing list of beer styles
@@ -127,7 +127,7 @@ public class AddBeerActivity extends Activity {
         }
 
         // Login button Click Event
-        btnLogin.setOnClickListener(new View.OnClickListener() {
+        btnAddBeer.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View view) {
                 String name = inputNamebeer.getText().toString().trim();

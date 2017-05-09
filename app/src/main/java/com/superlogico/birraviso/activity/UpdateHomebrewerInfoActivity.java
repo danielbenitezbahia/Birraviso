@@ -9,6 +9,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -16,11 +17,26 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+
+import com.google.android.gms.location.places.ui.PlaceSelectionListener;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.maps.CameraUpdate;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.superlogico.birraviso.MainActivity;
 import com.superlogico.birraviso.R;
 import com.superlogico.birraviso.app.AppConfig;
@@ -34,7 +50,9 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
-public class UpdateHomebrewerInfoActivity extends Activity {
+public class UpdateHomebrewerInfoActivity extends FragmentActivity
+        implements OnMapReadyCallback {
+
 
     private static final String BEER_NAME = "name";
     private static final String BEER_TRADEMARK = "trademark";
@@ -51,8 +69,15 @@ public class UpdateHomebrewerInfoActivity extends Activity {
     private static final String KEY_UID = "uid";
 
     private static final String TAG = RegisterActivity.class.getSimpleName();
+    private static final String Y_COORDINATE = "y_coordinate";
+    private static final String X_COORDINATE = "x_coordinate";
+    private static final String PROFILE_CONTACT = "contact";
+    private static final String PROFILE_CONTACT_EMAIL = "email";
+    private static final String PROFILE_CONTACT_WHATSAPP = "whatsapp";
+    private static final String PROFILE_CONTACT_FACEBOOK = "facebook";
 
-    private Button btnAddUpdateBeer;
+
+    private Button btnAddUpdateProfile;
     private Button btnCancel;
     private EditText inputNamebeer;
     private EditText inputTrademark;
@@ -66,36 +91,28 @@ public class UpdateHomebrewerInfoActivity extends Activity {
     private SessionManager session;
     private SQLiteHandler db;
     private static AppController appController;
-    private String[] beerStyles = {"American Light Lager","American Lager","Cream Ale","American Wheat Beer","International Pale Lager",
-            "International Amber Lager","International Dark Lager","Czech Pale Lager","Czech Premium Pale Lager","Czech Amber Lager",
-            "Czech Dark Lager","Munich Helles","Festbier","Helles Bock","German Leichtbier","Kölsch","German Helles Exportbier","German Pils",
-            "Märzen","Rauchbier","Dunkles Bock","Vienna Lager","Altbier","Pale Kellerbier","Amber Kellerbier","Munich Dunkel","Schwarzbier",
-            "Doppelbock","Eisbock","Baltic Porter","Weissbier","Dunkles Weissbier","Weizenbock","Ordinary Bitter","Best Bitter","Strong Bitter",
-            "British Golden Ale","Australian Sparkling Ale","English IPA","Dark Mild","British Brown Ale","English Porter","Scottish Light",
-            "Scottish Heavy","Scottish Export","Irish Red Ale","Irish Stout","Irish Extra Stout","Sweet Stout","Oatmeal Stout","Tropical Stout",
-            "Foreign Extra Stout","British Strong Ale","Old Ale","Wee Heavy","English Barleywine","Blonde Ale","American Pale Ale","American Amber Ale",
-            "California Common ","American Brown Ale","American Porter","American Stout","Imperial Stout","American IPA","Specialty IPA - Belgian IPA",
-            "Specialty IPA - Black IPA","Specialty IPA - Brown IPA","Specialty IPA - Red IPA","Specialty IPA - Rye IPA","Specialty IPA - White IPA",
-            "Double IPA","American Strong Ale","American Barleywine","Wheatwine","Berliner Weisse","Flanders Red Ale","Oud Bruin","Lambic","Gueuze ",
-            "Fruit Lambic","Witbier","Belgian Pale Ale","Bière de Garde","Belgian Blond Ale","Saison","Belgian Golden Strong Ale","Trappist Single",
-            "Belgian Dubbel","Belgian Tripel","Belgian Dark Strong Ale","Gose","Kentucky Common","Lichtenhainer","London Brown Ale","Piwo Grodziskie",
-            "Pre-Prohibition Lager","Pre-Prohibition Porter","Roggenbier","Sahti","Brett Beer","Mixed-Fermentation Sour Beer","Wild Specialty Beer",
-            "Fruit Beer","Fruit and Spice Beer","Specialty Fruit Beer","Spice"," Herb"," or Vegetable Beer","Autumn Seasonal Beer","Winter Seasonal Beer",
-            "Alternative Grain Beer","Alternative Sugar Beer","Classic Style Smoked Beer","Specialty Smoked Beer",
-            "Wood-Aged Beer","Specialty Wood-Aged Beer","Clone Beer","Mixed-Style Beer","Experimental Beer","Dorada Pampeana","IPA Argenta"};
-    private TextInputLayout inputNamebeerLayout;
-    private TextInputLayout inputTrademarkLayout;
-    private TextInputLayout inputStyleLayout;
-    private TextInputLayout inputIbuLayout;
-    private TextInputLayout inputSrmLayout;
-    private TextInputLayout inputAlcoholLayout;
+
     private TextInputLayout inputDescrpitionLayout;
+    private TextInputLayout inputEmailLayout;
+    private TextInputLayout inputFacebookLayout;
+    private TextInputLayout inputWhatsappLayout;
+
+    private GoogleMap mMap;
+    private EditText inputContact;
+    private EditText inputContactFacebook;
+    private EditText inputContactWhatsapp;
+    private EditText inputContactEmail;
+     private String latitud = "";
+     private String longitud = "";
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_beer_form);
+        setContentView(R.layout.activity_edit_profile_form);
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
 
         Intent myIntent = getIntent(); // gets the previously created intent
         final String beerId = myIntent.getStringExtra(KEY_UID);
@@ -103,59 +120,62 @@ public class UpdateHomebrewerInfoActivity extends Activity {
         String beerTrademark = myIntent.getStringExtra(BEER_TRADEMARK);
         String beerStyle = myIntent.getStringExtra(BEER_STYLE);
         String beerIbu = myIntent.getStringExtra(BEER_IBU);
-        String beerSrm = myIntent.getStringExtra(BEER_SRM);
-        String beerAlcohol = myIntent.getStringExtra(BEER_ALCOHOL);
-        String beerDescription = myIntent.getStringExtra(BEER_DESCRIPTION);
-
-        // layout edittext
-        inputNamebeerLayout = (TextInputLayout) findViewById(R.id.namebeer_layout);
-        inputTrademarkLayout = (TextInputLayout) findViewById(R.id.trademark_layout);
-        inputStyleLayout = (TextInputLayout) findViewById(R.id.style_layout);
-        inputIbuLayout = (TextInputLayout) findViewById(R.id.ibu_layout);
-        inputSrmLayout = (TextInputLayout) findViewById(R.id.srm_layout);
-        inputAlcoholLayout = (TextInputLayout) findViewById(R.id.alcohol_layout);
-        inputDescrpitionLayout = (TextInputLayout) findViewById(R.id.description_layout);
-        inputNamebeerLayout.setHint("Nombre");
-        inputTrademarkLayout.setHint("Marca");
-        inputStyleLayout.setHint("Estilo");
-        inputIbuLayout.setHint("IBU");
-        inputSrmLayout.setHint("SRM");
-        inputAlcoholLayout.setHint("Alcohol");
-        inputDescrpitionLayout.setHint("Descripcion breve");
+        String y_coordinate = myIntent.getStringExtra(Y_COORDINATE);
+        String x_coordinate = myIntent.getStringExtra(X_COORDINATE);
+        String beerContact = myIntent.getStringExtra(BEER_CONTACT_INFO);
 
 
-        inputNamebeer = (EditText) findViewById(R.id.namebeer);
+        inputDescrpitionLayout = (TextInputLayout) findViewById(R.id.contact_layout);
+        inputDescrpitionLayout.setHint("Tu mombre o el nombre de tu marca de birras");
 
-        inputTrademark = (EditText) findViewById(R.id.trademark);
-        inputStyle = (AutoCompleteTextView) findViewById(R.id.style);
-        inputIbu = (EditText) findViewById(R.id.ibu);
-        inputSrm = (EditText) findViewById(R.id.srm);
-        inputAlcohol = (EditText) findViewById(R.id.alcohol);
+        inputWhatsappLayout = (TextInputLayout) findViewById(R.id.contact_whatsapp_layout);
+        inputWhatsappLayout.setHint("Tu nro. de celular / Whatsapp");
+
+        inputEmailLayout = (TextInputLayout) findViewById(R.id.contact_email_layout);
+        inputEmailLayout.setHint("Tu email");
+
+        inputFacebookLayout = (TextInputLayout) findViewById(R.id.contact_facebook_layout);
+        inputFacebookLayout.setHint("Tu Facebook de homebrewer");
+
         inputDescrpition = (EditText) findViewById(R.id.description);
-        btnAddUpdateBeer = (Button) findViewById(R.id.btnAddUpdateBeer);
-        btnAddUpdateBeer.setText("Actualizar Birra");
+        inputContact = (EditText) findViewById(R.id.contact);
+        inputContactFacebook = (EditText) findViewById(R.id.contact_facebook);
+        inputContactEmail = (EditText) findViewById(R.id.contact_email);
+        inputContactWhatsapp = (EditText) findViewById(R.id.contact_whatsapp);
+
+        btnAddUpdateProfile = (Button) findViewById(R.id.btnAddUpdateBeer);
+        btnAddUpdateProfile.setText("Actualizar mi perfil");
         btnCancel = (Button) findViewById(R.id.btnCancel);
-
-
-        inputNamebeer.setText(beerName);
-        inputTrademark.setText(beerTrademark);
-        inputStyle.setText(beerStyle);
-        inputIbu.setText(beerIbu);
-        inputSrm.setText(beerSrm);
-        inputAlcohol.setText(beerAlcohol);
-        inputDescrpition.setText(beerDescription);
-
-        //Creating the instance of ArrayAdapter containing list of beer styles
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>
-                (this,android.R.layout.select_dialog_item,beerStyles);
-
-        AutoCompleteTextView textView = (AutoCompleteTextView)
-                findViewById(R.id.style);
-        textView.setAdapter(adapter);
 
         // Progress dialog
         pDialog = new ProgressDialog(this);
         pDialog.setCancelable(false);
+
+        PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
+                getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
+
+        autocompleteFragment.setHint("Direccion de mi birreria");
+        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(Place place) {
+                Log.i(TAG, "Place: " + place.getName());
+                latitud = String.valueOf(place.getLatLng().latitude);
+                longitud = String.valueOf(place.getLatLng().longitude);
+                mMap.addMarker(new MarkerOptions().position(place.getLatLng()).title("Ésta es tu birrería"));
+                CameraUpdate center=
+                        CameraUpdateFactory.newLatLngZoom(place.getLatLng(), 15.0f);
+               // CameraUpdate zoom=CameraUpdateFactory.zoomTo(15);
+
+                mMap.moveCamera(center);
+               // mMap.animateCamera(zoom);
+            }
+
+            @Override
+            public void onError(Status status) {
+                // TODO: Handle the error.
+                Log.i(TAG, "An error occurred: " + status);
+            }
+        });
 
         // SQLite database handler
         db = new SQLiteHandler(getApplicationContext());
@@ -185,22 +205,18 @@ public class UpdateHomebrewerInfoActivity extends Activity {
         });
 
 
-        btnAddUpdateBeer.setOnClickListener(new View.OnClickListener() {
+        btnAddUpdateProfile.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View view) {
-                String name = inputNamebeer.getText().toString().trim();
-                String style = inputStyle.getText().toString().trim();
-                String description = inputDescrpition.getText().toString().trim();
-                String alcohol = inputAlcohol.getText().toString().trim();
-                String srm = inputSrm.getText().toString().trim();
-                String ibu = inputIbu.getText().toString().trim();
-                String trademark = inputTrademark.getText().toString().trim();
-
+                String contact = inputContact.getText().toString().trim();
+                String contactWhatsapp = inputContactWhatsapp.getText().toString().trim();
+                String contactEmail = inputContactEmail.getText().toString().trim();
+                String contactFacebook = inputContactFacebook.getText().toString().trim();
 
                 // Check for empty data in the form
-                if (!name.isEmpty() && !style.isEmpty()) {
+                if (!contact.isEmpty() && !contact.isEmpty()) {
                     // add beer
-                    updateBeerToUserList(beerId,name,trademark,style,ibu,alcohol,srm,description,"","","","");
+                    updateProfile(contact, contactEmail, contactFacebook, contactWhatsapp);
                 } else {
                     // Prompt user to enter credentials
                     Toast.makeText(getApplicationContext(),
@@ -213,32 +229,24 @@ public class UpdateHomebrewerInfoActivity extends Activity {
 
     }
 
-    private void updateBeerToUserList(String beerId,String name,String trademark,String style,String ibu,
-                                      String alcohol,String srm,String description,String others,
-                                      String contact,String geo_x,String geo_y) {
-        final String addBeerId = beerId;
-        final String addName = name;
-        final String addTrademark = trademark;
-        final String addStyle = style;
-        final String addIbu = ibu;
-        final String addAlcohol = alcohol;
-        final String addSrm = srm;
-        final String addDescription = description;
-        final String addOthers = others;
+    private void updateProfile(String contact, String contactEmail, String contactFacebook,String contactWhatsapp
+                                      ) {
         final String addContact = contact;
-        final String addGeo_x = geo_x;
-        final String addGeo_y = geo_y;
+        final String addContactEmail = contactEmail;
+        final String addContactFacebook = contactFacebook;
+        final String addContactWhatsapp = contactWhatsapp;
+
         // Tag used to cancel the request
         String tag_string_req = "req_login";
 
         showDialog();
 
         StringRequest strReq = new StringRequest(Request.Method.POST,
-                AppConfig.UPDATE_BEER_URL,new Response.Listener<String>() {
+                AppConfig.UPDATE_PROFILE_URL,new Response.Listener<String>() {
 
             @Override
             public void onResponse(String response) {
-                Log.d(TAG,"Actualizando birra : " + response.toString());
+                Log.d(TAG,"Actualizando Perfil : " + response.toString());
                 hideDialog();
 
                 try {
@@ -276,18 +284,14 @@ public class UpdateHomebrewerInfoActivity extends Activity {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put(KEY_UID,addBeerId);
-                params.put(BEER_NAME,addName);
-                params.put(BEER_TRADEMARK,addTrademark);
-                params.put(BEER_STYLE,addStyle);
-                params.put(BEER_IBU,addIbu);
-                params.put(BEER_ALCOHOL,addAlcohol);
-                params.put(BEER_SRM,addSrm);
-                params.put(BEER_DESCRIPTION,addDescription);
-                params.put(BEER_OTHERS,addOthers);
-                params.put(BEER_CONTACT_INFO,addContact);
-                params.put(BEER_GEO_X,addGeo_x);
-                params.put(BEER_GEO_Y,addGeo_y);
+
+                params.put(PROFILE_CONTACT, addContact);
+                params.put(PROFILE_CONTACT_EMAIL,addContactEmail);
+                params.put(PROFILE_CONTACT_FACEBOOK,addContactFacebook);
+                params.put(PROFILE_CONTACT_WHATSAPP, addContactWhatsapp);
+                params.put(BEER_GEO_X, latitud);
+                params.put(BEER_GEO_Y, longitud);
+
                 return params;
             }
 
@@ -315,5 +319,25 @@ public class UpdateHomebrewerInfoActivity extends Activity {
     private void hideDialog() {
         if (pDialog.isShowing())
             pDialog.dismiss();
+    }
+
+    /**
+     * Manipulates the map once available.
+     * This callback is triggered when the map is ready to be used.
+     * This is where we can add markers or lines, add listeners or move the camera. In this case,
+     * we just add a marker near Sydney, Australia.
+     * If Google Play services is not installed on the device, the user will be prompted to install
+     * it inside the SupportMapFragment. This method will only be triggered once the user has
+     * installed Google Play services and returned to the app.
+     */
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+
+        // Add a marker in Sydney and move the camera
+        LatLng sydney = new LatLng(-34, 151);
+        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+
     }
 }

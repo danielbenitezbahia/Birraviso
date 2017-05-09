@@ -37,6 +37,7 @@ import com.superlogico.birraviso.activity.AddBeerActivity;
 import com.superlogico.birraviso.activity.LoginActivity;
 import com.superlogico.birraviso.activity.RegisterActivity;
 import com.superlogico.birraviso.activity.UpdateBeerActivity;
+import com.superlogico.birraviso.activity.UpdateHomebrewerInfoActivity;
 import com.superlogico.birraviso.adapter.BeerAdapter;
 import com.superlogico.birraviso.adapter.DividerItemDecoration;
 import com.superlogico.birraviso.adapter.RecyclerTouchListener;
@@ -89,6 +90,7 @@ public class MainActivity extends AppCompatActivity
     private GoogleApiClient client;
     private View checkbox;
     private ActionBarDrawerToggle toggle;
+    private FloatingActionButton addBeerFab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,6 +118,8 @@ public class MainActivity extends AppCompatActivity
                         .setAction("Action", null).show();
             }
         });
+
+        addBeerFab = (FloatingActionButton) findViewById(R.id.fab);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
          toggle = new ActionBarDrawerToggle(
@@ -281,6 +285,7 @@ public class MainActivity extends AppCompatActivity
             }
         }
         deleteMyBeerList(beersToDelete);
+        deleteModeOff();
     }
 
     private void deleteModeOff(){
@@ -343,20 +348,25 @@ public class MainActivity extends AppCompatActivity
             startActivity(intent);
             finish();
         } else if (id == R.id.nav_gallery) {
-            logoutUser();
+            Intent intent = new Intent(MainActivity.this,UpdateHomebrewerInfoActivity.class);
+            startActivity(intent);
+            finish();
+
 
         } else if (id == R.id.nav_slideshow) {
            //Intent intent = new Intent(MainActivity.this,MyBeerList.class);
            // startActivity(intent);
            // finish();
             this.getMyBeerList();
+            addBeerFab.setVisibility(View.VISIBLE);
+
 
         } else if (id == R.id.nav_manage) {
 
         } else if (id == R.id.nav_share) {
 
-        } else if (id == R.id.nav_send) {
-
+        } else if (id == R.id.nav_logout) {
+            logoutUser();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -608,7 +618,6 @@ public class MainActivity extends AppCompatActivity
                 Map<String, String> params = new HashMap<String, String>();
                 String ids = TextUtils.join(",", idBeersToDelete);
                 params.put(ID_BEERS_TO_DELETE, ids);
-                params.put(BEER_CONTACT_INFO,"");
                 return params;
             }
 

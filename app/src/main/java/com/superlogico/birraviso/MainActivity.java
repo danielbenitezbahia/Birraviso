@@ -83,6 +83,13 @@ public class MainActivity extends AppCompatActivity
     private static final String BEER_OTHERS = "others";
     private static final String BEER_CONTACT_INFO = "contact";
     private static final String TRUE_HB = "true";
+
+    private static final String CONTACT = "contacto";
+    private static final String WHATSAPP = "whatsapp";
+    private static final String FACEBOOK = "facebook";
+    private static final String EMAIL = "email";
+    private static final String LATITUD = "latitud";
+    private static final String LONGITUD = "longitud";
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -101,7 +108,6 @@ public class MainActivity extends AppCompatActivity
 
         // SqLite database handler
         db = new SQLiteHandler(getApplicationContext());
-
 
         // session manager
         session = new SessionManager(getApplicationContext());
@@ -348,11 +354,7 @@ public class MainActivity extends AppCompatActivity
             startActivity(intent);
             finish();
         } else if (id == R.id.nav_gallery) {
-            Intent intent = new Intent(MainActivity.this,UpdateHomebrewerInfoActivity.class);
-            startActivity(intent);
-            finish();
-
-
+            this.getMyProfileData();
         } else if (id == R.id.nav_slideshow) {
            //Intent intent = new Intent(MainActivity.this,MyBeerList.class);
            // startActivity(intent);
@@ -409,14 +411,11 @@ public class MainActivity extends AppCompatActivity
 
                     saveAllBeers(jObj);
                     prepareBeerData();
-
-
                 } catch (JSONException e) {
                     // JSON error
                     e.printStackTrace();
                     Toast.makeText(getApplicationContext(), "Json error: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 }
-
             }
         }, new Response.ErrorListener() {
 
@@ -440,7 +439,6 @@ public class MainActivity extends AppCompatActivity
     private void getMyBeerList() {
         // Tag used to cancel the request
         String tag_string_req = "req_login";
-
         showDialog();
         StringRequest strReq = new StringRequest(Request.Method.GET,
                 AppConfig.GET_BEER_LIST_BY_UID_URL, new Response.Listener<String>() {
@@ -479,9 +477,6 @@ public class MainActivity extends AppCompatActivity
                 hideDialog();
             }
         }) {
-
-
-
             @Override
             public Map<String, String> getHeaders()  {
                 Map<String,String> params =  new HashMap<>();
@@ -491,9 +486,7 @@ public class MainActivity extends AppCompatActivity
                 //..add other headers
                 return params;
             }
-
         };
-
         // Adding request to request queue
         String a = "0";
         AppController.getInstance().addToRequestQueue(strReq, tag_string_req);
@@ -583,7 +576,6 @@ public class MainActivity extends AppCompatActivity
             public void onResponse(String response) {
                 Log.d(TAG,"Borrando lista de birras : " + response.toString());
                 hideDialog();
-
                 try {
                     JSONObject jObj = new JSONObject(response);
                     boolean error = jObj.getBoolean("error");
@@ -593,8 +585,6 @@ public class MainActivity extends AppCompatActivity
                         // Launch main activity
                         showDialog();
                         getMyBeerList();
-
-
                     }
                 } catch (JSONException e) {
                     // JSON error
@@ -634,6 +624,76 @@ public class MainActivity extends AppCompatActivity
         // Adding request to request queue
         String a = "0";
         AppController.getInstance().addToRequestQueue(strReq,tag_string_req);
+    }
+
+    private void getMyProfileData() {
+        // Tag used to cancel the request
+        String tag_string_req = "req_login";
+
+        showDialog();
+        StringRequest strReq = new StringRequest(Request.Method.GET,
+                AppConfig.GET_PROFILE_URL, new Response.Listener<String>() {
+
+            @Override
+            public void onResponse(String response) {
+                Log.d(TAG, "Trayendo mis datos de perfil : " + response.toString());
+                hideDialog();
+                try {
+                    JSONObject jObj = new JSONObject(response);
+                    boolean error = jObj.getBoolean("error");
+                    // Check for error node in json
+                    if (!error) {
+                        JSONObject profile = jObj.getJSONObject("profile");
+                        String contacto = (String) profile.get("contacto");
+                        String whatsapp = (String) profile.get("whatsapp");
+                        String email = (String) profile.get("email");
+                        String facebook = (String) profile.get("facebook");
+                        String latitud = (String) profile.get("geo_x");
+                        String longitud = (String) profile.get("geo_y");
+                        editMyProfile(contacto, whatsapp, email, facebook, latitud, longitud);
+                    }
+                } catch (JSONException e) {
+                    // JSON error
+                    e.printStackTrace();
+                    Toast.makeText(getApplicationContext(), "Json error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            }
+        }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e(TAG, "Login Error: " + error.getMessage());
+                Toast.makeText(getApplicationContext(),
+                        error.getMessage(), Toast.LENGTH_LONG).show();
+                hideDialog();
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders()  {
+                Map<String,String> params =  new HashMap<>();
+                HashMap<String, String> userDetails = db.getUserDetails();
+                String unique_id = userDetails.get(KEY_UID);
+                params.put("Authorization", unique_id);
+                //..add other headers
+                return params;
+            }
+        };
+        // Adding request to request queue
+        String a = "0";
+        AppController.getInstance().addToRequestQueue(strReq, tag_string_req);
+    }
+
+    private void editMyProfile(String contacto,String whatsapp,String email,String facebook,String latitud,String longitud) {
+
+        Intent intent = new Intent(MainActivity.this,UpdateHomebrewerInfoActivity.class);
+        intent.putExtra(CONTACT, contacto);
+        intent.putExtra(WHATSAPP, whatsapp);
+        intent.putExtra(EMAIL, email);
+        intent.putExtra(FACEBOOK, facebook);
+        intent.putExtra(LATITUD, latitud);
+        intent.putExtra(LONGITUD, longitud);
+        startActivity(intent);
+        finish();
     }
 
     private void showDialog() {

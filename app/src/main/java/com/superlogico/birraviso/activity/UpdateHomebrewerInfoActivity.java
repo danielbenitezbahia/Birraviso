@@ -71,10 +71,12 @@ public class UpdateHomebrewerInfoActivity extends FragmentActivity
     private static final String TAG = RegisterActivity.class.getSimpleName();
     private static final String Y_COORDINATE = "y_coordinate";
     private static final String X_COORDINATE = "x_coordinate";
-    private static final String PROFILE_CONTACT = "contact";
+    private static final String PROFILE_CONTACT = "contacto";
     private static final String PROFILE_CONTACT_EMAIL = "email";
     private static final String PROFILE_CONTACT_WHATSAPP = "whatsapp";
     private static final String PROFILE_CONTACT_FACEBOOK = "facebook";
+    private static final String LATITUD = "latitud";
+    private static final String LONGITUD = "longitud";
 
 
     private Button btnAddUpdateProfile;
@@ -102,8 +104,13 @@ public class UpdateHomebrewerInfoActivity extends FragmentActivity
     private EditText inputContactFacebook;
     private EditText inputContactWhatsapp;
     private EditText inputContactEmail;
-     private String latitud = "";
-     private String longitud = "";
+    private String latitud = "";
+    private String longitud = "";
+    private String contact;
+    private String whatsapp;
+    private String email;
+    private String facebook;
+
 
 
     @Override
@@ -115,14 +122,12 @@ public class UpdateHomebrewerInfoActivity extends FragmentActivity
         mapFragment.getMapAsync(this);
 
         Intent myIntent = getIntent(); // gets the previously created intent
-        final String beerId = myIntent.getStringExtra(KEY_UID);
-        String beerName = myIntent.getStringExtra(BEER_NAME);
-        String beerTrademark = myIntent.getStringExtra(BEER_TRADEMARK);
-        String beerStyle = myIntent.getStringExtra(BEER_STYLE);
-        String beerIbu = myIntent.getStringExtra(BEER_IBU);
-        String y_coordinate = myIntent.getStringExtra(Y_COORDINATE);
-        String x_coordinate = myIntent.getStringExtra(X_COORDINATE);
-        String beerContact = myIntent.getStringExtra(BEER_CONTACT_INFO);
+        contact = myIntent.getStringExtra(PROFILE_CONTACT);
+        email = myIntent.getStringExtra(PROFILE_CONTACT_EMAIL);
+        whatsapp = myIntent.getStringExtra(PROFILE_CONTACT_WHATSAPP);
+        facebook = myIntent.getStringExtra(PROFILE_CONTACT_FACEBOOK);
+        latitud = myIntent.getStringExtra(LATITUD);
+        longitud = myIntent.getStringExtra(LONGITUD);
 
 
         inputDescrpitionLayout = (TextInputLayout) findViewById(R.id.contact_layout);
@@ -142,6 +147,11 @@ public class UpdateHomebrewerInfoActivity extends FragmentActivity
         inputContactFacebook = (EditText) findViewById(R.id.contact_facebook);
         inputContactEmail = (EditText) findViewById(R.id.contact_email);
         inputContactWhatsapp = (EditText) findViewById(R.id.contact_whatsapp);
+
+        inputContact.setText(contact);
+        inputContactFacebook.setText(facebook);
+        inputContactEmail.setText(email);
+        inputContactWhatsapp.setText(whatsapp);
 
         btnAddUpdateProfile = (Button) findViewById(R.id.btnAddUpdateBeer);
         btnAddUpdateProfile.setText("Actualizar mi perfil");
@@ -311,6 +321,8 @@ public class UpdateHomebrewerInfoActivity extends FragmentActivity
         AppController.getInstance().addToRequestQueue(strReq,tag_string_req);
     }
 
+
+
     private void showDialog() {
         if (!pDialog.isShowing())
             pDialog.show();
@@ -335,9 +347,16 @@ public class UpdateHomebrewerInfoActivity extends FragmentActivity
         mMap = googleMap;
 
         // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        LatLng birreria = new LatLng(Double.parseDouble(latitud), Double.parseDouble(longitud));
+       // mMap.addMarker(new MarkerOptions().position(birreria).title(contact));
+     //   mMap.moveCamera(CameraUpdateFactory.newLatLng(birreria));
+
+        mMap.addMarker(new MarkerOptions().position(birreria).title("Ésta es tu birrería"));
+        CameraUpdate center=
+                CameraUpdateFactory.newLatLngZoom(birreria, 15.0f);
+        // CameraUpdate zoom=CameraUpdateFactory.zoomTo(15);
+
+        mMap.moveCamera(center);
 
     }
 }

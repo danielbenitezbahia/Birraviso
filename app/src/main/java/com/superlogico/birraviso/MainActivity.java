@@ -9,7 +9,9 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabLayout;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -24,6 +26,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -43,6 +49,8 @@ import com.superlogico.birraviso.adapter.DividerItemDecoration;
 import com.superlogico.birraviso.adapter.RecyclerTouchListener;
 import com.superlogico.birraviso.app.AppConfig;
 import com.superlogico.birraviso.app.AppController;
+import com.superlogico.birraviso.fragment.BeerList;
+import com.superlogico.birraviso.fragment.FavoriteList;
 import com.superlogico.birraviso.helper.SQLiteHandler;
 import com.superlogico.birraviso.helper.SessionManager;
 import com.superlogico.birraviso.model.Beer;
@@ -71,6 +79,8 @@ public class MainActivity extends AppCompatActivity
     private boolean homebrewerMode;
     private boolean deleteMode;
     private MenuItem deleteIcon;
+    private TabLayout tabLayout;
+    private ViewPager viewPager;
 
     private static final String KEY_UID = "uid";
     private static final String BEER_NAME = "name";
@@ -105,6 +115,12 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+       /* viewPager = (ViewPager) findViewById(R.id.viewpager);
+        setupViewPager(viewPager);
+
+        tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(viewPager);*/
 
         // SqLite database handler
         db = new SQLiteHandler(getApplicationContext());
@@ -211,6 +227,42 @@ public class MainActivity extends AppCompatActivity
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
+
+   /*private void setupViewPager(ViewPager viewPager) {
+        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        adapter.addFragment(new BeerList(), "ONE");
+        adapter.addFragment(new FavoriteList(), "TWO");
+        viewPager.setAdapter(adapter);
+    }
+
+    class ViewPagerAdapter extends FragmentPagerAdapter {
+        private final List<Fragment> mFragmentList = new ArrayList<>();
+        private final List<String> mFragmentTitleList = new ArrayList<>();
+
+        public ViewPagerAdapter(FragmentManager manager) {
+            super(manager);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return mFragmentList.get(position);
+        }
+
+        @Override
+        public int getCount() {
+            return mFragmentList.size();
+        }
+
+        public void addFragment(Fragment fragment, String title) {
+            mFragmentList.add(fragment);
+            mFragmentTitleList.add(title);
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return mFragmentTitleList.get(position);
+        }
+    }*/
 
     private void  setDeleteMode(){
         deleteMode = true;

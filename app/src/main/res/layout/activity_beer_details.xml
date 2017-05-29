@@ -45,40 +45,136 @@
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                     android:layout_width="match_parent"
-                    android:layout_height="120dp"
+                    android:layout_height="70dp"
                     android:padding="8dp"
                     android:layout_margin="28dp">
         <TextView
-            android:id="@+id/textview_title1"
-            android:layout_width="0dp"
+            android:text="IBU: 45"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/textview_content1"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:layout_toLeftOf="@+id/imageview_icon1"
-            android:text="Nombre de la birra"
+            android:gravity="center"
+            android:id="@+id/ibuBeer"
+            android:layout_width="wrap_content"
+            android:layout_toLeftOf="@+id/alcoholBeer"
             android:textColor="@android:color/black"
-            android:textSize="30dp" />
+            android:paddingRight="10dp"
+            android:textSize="20dp"
+            android:layout_centerVertical="true"/>
 
         <TextView
-            android:id="@+id/textview_content1"
-            android:layout_width="0dp"
+            android:text="ABV: 5,5%"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
-            android:layout_toLeftOf="@+id/imageview_icon1"
-            android:text="Tipo de birra"
-            android:textColor="@android:color/black"
-            android:textSize="24dp" />
+            android:gravity="center"
+            android:id="@+id/alcoholBeer"
+            android:layout_width="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_margin="10dp"
+            android:textSize="20dp"
+            android:textColor="@android:color/black"/>
 
-        <ImageView
-            android:id="@+id/imageview_icon1"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-            android:src="@drawable/pintofbeer" />
+        <TextView
+            android:text="SMR: 20"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:id="@+id/srmBeer"
+            android:layout_width="wrap_content"
+            android:layout_toRightOf="@+id/alcoholBeer"
+            android:paddingLeft="10dp"
+            android:textSize="20dp"
+            android:textColor="@android:color/black"
+            android:layout_centerVertical="true"/>
     </RelativeLayout>
+
+
+    <?xml version="1.0" encoding="utf-8"?>
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:id="@+id/lineartopview"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_alignParentTop="true"
+            android:background="@android:color/holo_green_dark"
+            android:orientation="horizontal" >
+            <TextView
+                android:text="Datos de Contacto "
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:id="@+id/headerContact"
+                android:layout_width="wrap_content"
+                android:textColor="@android:color/black"
+                android:textSize="20dp"
+                android:layout_centerHorizontal="true"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/linearmiddleview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/linearview"
+            android:layout_below="@+id/lineartopview"
+            android:orientation="horizontal" >
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:text="Whatsapp: "
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:id="@+id/homebrewerWhatsapp"
+                    android:layout_width="wrap_content"
+
+                    android:textColor="@android:color/black"
+
+                    android:textSize="20dp"
+                    android:layout_centerVertical="true"/>
+
+                <TextView
+                    android:text="Facebook: "
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:id="@+id/homebrewerFacebook"
+                    android:layout_width="wrap_content"
+
+                    android:textSize="20dp"
+                    android:textColor="@android:color/black"/>
+
+                <TextView
+                    android:text="Email: "
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:id="@+id/homebrewerEmail"
+                    android:layout_width="wrap_content"
+                    android:layout_toRightOf="@+id/alcoholBeer"
+
+                    android:textSize="20dp"
+                    android:textColor="@android:color/black"
+                    android:layout_centerVertical="true"/>
+
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/linearview"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_alignParentBottom="true"
+            android:background="@android:color/holo_green_dark"
+            android:orientation="horizontal" >
+        </LinearLayout>
+
+    </RelativeLayout>
+
+
 
 </LinearLayout>

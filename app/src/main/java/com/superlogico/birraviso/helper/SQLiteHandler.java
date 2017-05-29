@@ -144,13 +144,15 @@ public class SQLiteHandler extends SQLiteOpenHelper {
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
-        // Move to first row
-        cursor.moveToFirst();
-        if (cursor.getCount() > 0) {
-            user.put("name", cursor.getString(1));
-            user.put("email", cursor.getString(2));
-            user.put("uid", cursor.getString(3));
-            user.put("created_at", cursor.getString(4));
+        if(cursor.getCount() != 0) {
+            // Move to first row
+            cursor.moveToFirst();
+            if (cursor.getCount() > 0) {
+                user.put("name", cursor.getString(1));
+                user.put("email", cursor.getString(2));
+                user.put("uid", cursor.getString(3));
+                user.put("created_at", cursor.getString(4));
+            }
         }
         cursor.close();
         db.close();
@@ -245,27 +247,29 @@ public class SQLiteHandler extends SQLiteOpenHelper {
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
-        // Move to first row
-        cursor.moveToFirst();
-        // Cursor parameter Order
-        // id, name, trademark, style, ibu, alcohol, srm, description, others, contact , x, y
-        //
-        // Beer parameter order
-        // String beer_id, String user_id, String name, String style, String trademark, String ibu,
-        // String drb, String alcohol, String description, String contact, String others
-        Beer beer;
-        HashMap<String, String> userDetails = getUserDetails();
-        String unique_id = userDetails.get(KEY_UID);
-        beer = new Beer(cursor.getString(0), unique_id , cursor.getString(1), cursor.getString(3), cursor.getString(2),
-                cursor.getString(4), cursor.getString(5), cursor.getString(6), cursor.getString(7), cursor.getString(9),
-                cursor.getString(8));
-        beerList.add(beer);
-        while (cursor.moveToNext()) {
-
-            beer = new Beer(cursor.getString(0), unique_id , cursor.getString(1), cursor.getString(3), cursor.getString(2),
+        if(cursor.getCount() != 0) {
+            // Move to first row
+            cursor.moveToFirst();
+            // Cursor parameter Order
+            // id, name, trademark, style, ibu, alcohol, srm, description, others, contact , x, y
+            //
+            // Beer parameter order
+            // String beer_id, String user_id, String name, String style, String trademark, String ibu,
+            // String drb, String alcohol, String description, String contact, String others
+            Beer beer;
+            HashMap<String, String> userDetails = getUserDetails();
+            String unique_id = userDetails.get(KEY_UID);
+            beer = new Beer(cursor.getString(0), unique_id, cursor.getString(1), cursor.getString(3), cursor.getString(2),
                     cursor.getString(4), cursor.getString(5), cursor.getString(6), cursor.getString(7), cursor.getString(9),
                     cursor.getString(8));
             beerList.add(beer);
+            while (cursor.moveToNext()) {
+
+                beer = new Beer(cursor.getString(0), unique_id, cursor.getString(1), cursor.getString(3), cursor.getString(2),
+                        cursor.getString(4), cursor.getString(5), cursor.getString(6), cursor.getString(7), cursor.getString(9),
+                        cursor.getString(8));
+                beerList.add(beer);
+            }
         }
         cursor.close();
         db.close();

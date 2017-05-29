@@ -95,7 +95,7 @@ public class BeerDetailsActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_beer_form);
+        setContentView(R.layout.activity_beer_details);
 
         Intent myIntent = getIntent(); // gets the previously created intent
         final String beerId = myIntent.getStringExtra(KEY_UID);

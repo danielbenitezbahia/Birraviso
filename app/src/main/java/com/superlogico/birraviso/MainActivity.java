@@ -40,6 +40,7 @@ import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.appindexing.Thing;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.superlogico.birraviso.activity.AddBeerActivity;
+import com.superlogico.birraviso.activity.BeerDetailsActivity;
 import com.superlogico.birraviso.activity.LoginActivity;
 import com.superlogico.birraviso.activity.RegisterActivity;
 import com.superlogico.birraviso.activity.UpdateBeerActivity;
@@ -198,6 +199,20 @@ public class MainActivity extends AppCompatActivity
                 Beer beer = beerList.get(position);
                 if(homebrewerMode && !deleteMode){
                     Intent intent = new Intent(MainActivity.this,UpdateBeerActivity.class);
+                    intent.putExtra(KEY_UID, beer.getId());
+                    intent.putExtra(BEER_NAME, beer.getName());
+                    intent.putExtra(BEER_TRADEMARK, beer.getTrademark());
+                    intent.putExtra(BEER_STYLE, beer.getStyle());
+                    intent.putExtra(BEER_IBU, beer.getIbu());
+                    intent.putExtra(BEER_ALCOHOL, beer.getAlcohol());
+                    intent.putExtra(BEER_SRM, beer.getDrb());
+                    intent.putExtra(BEER_DESCRIPTION, beer.getDescription());
+                    intent.putExtra(BEER_NAME, beer.getName());
+
+                    startActivity(intent);
+                    finish();
+                } else if(!homebrewerMode && !deleteMode){
+                    Intent intent = new Intent(MainActivity.this,BeerDetailsActivity.class);
                     intent.putExtra(KEY_UID, beer.getId());
                     intent.putExtra(BEER_NAME, beer.getName());
                     intent.putExtra(BEER_TRADEMARK, beer.getTrademark());

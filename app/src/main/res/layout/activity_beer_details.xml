@@ -1,0 +1,84 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+              android:gravity="center"
+              android:orientation="vertical"
+              android:padding="10dp" >
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:layout_width="match_parent"
+                    android:layout_height="120dp"
+                    android:padding="8dp"
+                    android:layout_margin="28dp">
+        <TextView
+            android:id="@+id/textview_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/textview_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_toLeftOf="@+id/imageview_icon"
+            android:text="Nombre de la birra"
+            android:textColor="@android:color/black"
+            android:textSize="30dp" />
+
+        <TextView
+            android:id="@+id/textview_content"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_toLeftOf="@+id/imageview_icon"
+            android:text="Tipo de birra"
+            android:textColor="@android:color/black"
+            android:textSize="24dp" />
+
+        <ImageView
+            android:id="@+id/imageview_icon"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:src="@drawable/pintofbeer" />
+    </RelativeLayout>
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:layout_width="match_parent"
+                    android:layout_height="120dp"
+                    android:padding="8dp"
+                    android:layout_margin="28dp">
+        <TextView
+            android:id="@+id/textview_title1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/textview_content1"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_toLeftOf="@+id/imageview_icon1"
+            android:text="Nombre de la birra"
+            android:textColor="@android:color/black"
+            android:textSize="30dp" />
+
+        <TextView
+            android:id="@+id/textview_content1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_toLeftOf="@+id/imageview_icon1"
+            android:text="Tipo de birra"
+            android:textColor="@android:color/black"
+            android:textSize="24dp" />
+
+        <ImageView
+            android:id="@+id/imageview_icon1"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:src="@drawable/pintofbeer" />
+    </RelativeLayout>
+
+</LinearLayout>

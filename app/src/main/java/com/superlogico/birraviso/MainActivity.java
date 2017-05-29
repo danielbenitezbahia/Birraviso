@@ -79,6 +79,7 @@ public class MainActivity extends AppCompatActivity
     private boolean homebrewerMode;
     private boolean deleteMode;
     private MenuItem deleteIcon;
+    private MenuItem favoritesIcon;
     private TabLayout tabLayout;
     private ViewPager viewPager;
 
@@ -363,11 +364,14 @@ public class MainActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
+        favoritesIcon = menu.findItem(R.id.favorite_icon);
         deleteIcon = menu.findItem(R.id.delete_icon);
         if(deleteMode){
             deleteIcon.setVisible(true);
+            favoritesIcon.setVisible(false);
         }else{
             deleteIcon.setVisible(false);
+            favoritesIcon.setVisible(true);
         }
         return true;
     }
@@ -388,9 +392,19 @@ public class MainActivity extends AppCompatActivity
             case R.id.delete_icon:
                 deleteMySelectedBeers();
                 return true;
+            case R.id.favorite_icon:
+                showMyFavoriteHomebrewerBeers();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void showMyFavoriteHomebrewerBeers() {
+        db.getMyFavoriteBeers();
+        beerList = db.getMyFavoriteBeers();
+        bAdapter.setBeerList(beerList);
+        bAdapter.notifyDataSetChanged();
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -563,8 +577,9 @@ public class MainActivity extends AppCompatActivity
                 String contact = beer.getString("contacto");
                 String geo_x = beer.getString("geo_x");
                 String geo_y = beer.getString("geo_y");
+                String hb_id = beer.getString("hb_id");
 
-                db.addBeer(id, name, trademark, style, ibu, alcohol, srm, description, others, contact, geo_x, geo_y);
+                db.addBeer(id, name, trademark, style, ibu, alcohol, srm, description, others, contact, geo_x, geo_y, hb_id);
 
             } catch (JSONException e) {
                 Log.e(TAG, "JSON ERROR! " + e.getMessage());

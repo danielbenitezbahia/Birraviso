@@ -29,7 +29,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
 
     // Beers table name
     private static final String TABLE_BEER = "beer";
-    // Login Table Columns names
+    // Beers Table Columns names
     private static final String BEER_ID = "id";
     private static final String BEER_NAME = "name";
     private static final String BEER_TRADEMARK = "trademark";
@@ -42,11 +42,15 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     private static final String BEER_CONTACT_INFO = "contact";
     private static final String BEER_GEO_X = "geo_x";
     private static final String BEER_GEO_Y = "geo_y";
-    private static final String BEER_UID = "unique_id";
+    private static final String BEER_HB_ID = "hb_id";
 
+    // Favorites table name
+    private static final String TABLE_FAVORITE = "favorite";
+    // Favorites Table Columns names
+    private static final String FAVORITE_ID = "id";
+    private static final String FAVORITE_ID_HB = "hb_id";
 
     private static final String TABLE_USER = "user";
-
     // Login Table Columns names
     private static final String KEY_ID = "id";
     private static final String KEY_NAME = "name";
@@ -54,8 +58,6 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     private static final String KEY_UID = "uid";
     private static final String KEY_CREATED_AT = "created_at";
     SQLiteDatabase db;
-
-
 
     public SQLiteHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -76,8 +78,13 @@ public class SQLiteHandler extends SQLiteOpenHelper {
                 + BEER_TRADEMARK + " TEXT," + BEER_STYLE + " TEXT, "
                 + BEER_IBU + " TEXT, " + BEER_ALCOHOL + " TEXT, "+ BEER_SMR + " TEXT, "
                 + BEER_DESCRIPTION + " TEXT,"+ BEER_OTHERS + " TEXT," + BEER_CONTACT_INFO
-                + " TEXT, "+ BEER_GEO_X + " TEXT, " + BEER_GEO_Y + " TEXT" + " )";
+                + " TEXT, "+ BEER_GEO_X + " TEXT, " + BEER_GEO_Y + " TEXT," + BEER_HB_ID + " TEXT" + " )";
         db.execSQL(CREATE_BEER_TABLE);
+
+        String CREATE_FAVORITE_TABLE = "CREATE TABLE " + TABLE_FAVORITE + "("
+                + FAVORITE_ID + " INTEGER PRIMARY KEY," + FAVORITE_ID_HB + " TEXT"
+                 + ")";
+        db.execSQL(CREATE_FAVORITE_TABLE);
 
         Log.d(TAG, "Database tables created");
     }
@@ -88,6 +95,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         // Drop older table if existed
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USER);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_BEER);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_FAVORITE);
 
         // Create tables again
         onCreate(db);
@@ -169,7 +177,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
      * */
     public void addBeer(String idbackend, String name, String trademark, String style, String ibu,
                         String alcohol, String srm, String description, String others,
-                        String contact, String geo_x, String geo_y) {
+                        String contact, String geo_x, String geo_y, String hb_id) {
 
         int idb = Integer.valueOf(idbackend);
         SQLiteDatabase db = this.getWritableDatabase();
@@ -187,6 +195,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         values.put(BEER_CONTACT_INFO, contact);
         values.put(BEER_GEO_X, geo_x);
         values.put(BEER_GEO_Y, geo_y);
+        values.put(BEER_HB_ID, hb_id);
 
         // Inserting Row
         long id = db.insert(TABLE_BEER, null, values);
@@ -276,17 +285,19 @@ public class SQLiteHandler extends SQLiteOpenHelper {
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
-        // Move to first row
-        cursor.moveToFirst();
-        Beer beer;
-        beer = new Beer(cursor.getString(0), uid, cursor.getString(1) , cursor.getString(3), cursor.getString(2), cursor.getString(4),
-                cursor.getString(6), cursor.getString(5), cursor.getString(7), cursor.getString(9), cursor.getString(8));
-        beerList.add(beer);
-        while (cursor.moveToNext()) {
-
-            beer = new Beer(cursor.getString(0), uid, cursor.getString(1) , cursor.getString(3), cursor.getString(2), cursor.getString(4),
-                    cursor.getString(6), cursor.getString(5), cursor.getString(7), cursor.getString(9), cursor.getString(8));
+        if(cursor.getCount() != 0) {
+            // Move to first row
+            cursor.moveToFirst();
+            Beer beer;
+            beer = new Beer(cursor.getString(0),uid,cursor.getString(1),cursor.getString(3),cursor.getString(2),cursor.getString(4),
+                    cursor.getString(6),cursor.getString(5),cursor.getString(7),cursor.getString(9),cursor.getString(8));
             beerList.add(beer);
+            while (cursor.moveToNext()) {
+
+                beer = new Beer(cursor.getString(0),uid,cursor.getString(1),cursor.getString(3),cursor.getString(2),cursor.getString(4),
+                        cursor.getString(6),cursor.getString(5),cursor.getString(7),cursor.getString(9),cursor.getString(8));
+                beerList.add(beer);
+            }
         }
         cursor.close();
         db.close();
@@ -295,6 +306,51 @@ public class SQLiteHandler extends SQLiteOpenHelper {
 
         return beerList;
     }
+
+    /**
+     * Getting beers data from database
+     * */
+    public ArrayList<Beer> getMyFavoriteBeers() {
+
+        ArrayList<Beer> beerList = new ArrayList<Beer>();
+        String selectQuery = "SELECT * FROM " + TABLE_BEER + " JOIN " + TABLE_FAVORITE + " WHERE beer.hb_id = favorite.hb_id";
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        if(cursor.getCount() != 0) {
+            // Move to first row
+            cursor.moveToFirst();
+            // Cursor parameter Order
+            // id, name, trademark, style, ibu, alcohol, srm, description, others, contact , x, y
+            //
+            // Beer parameter order
+            // String beer_id, String user_id, String name, String style, String trademark, String ibu,
+            // String drb, String alcohol, String description, String contact, String others
+            Beer beer;
+            HashMap<String, String> userDetails = getUserDetails();
+            String unique_id = userDetails.get(KEY_UID);
+            beer = new Beer(cursor.getString(0),unique_id,cursor.getString(1),cursor.getString(3),cursor.getString(2),
+                    cursor.getString(4),cursor.getString(5),cursor.getString(6),cursor.getString(7),cursor.getString(9),
+                    cursor.getString(8));
+            beerList.add(beer);
+            while (cursor.moveToNext()) {
+
+                beer = new Beer(cursor.getString(0),unique_id,cursor.getString(1),cursor.getString(3),cursor.getString(2),
+                        cursor.getString(4),cursor.getString(5),cursor.getString(6),cursor.getString(7),cursor.getString(9),
+                        cursor.getString(8));
+                beerList.add(beer);
+            }
+        }
+        cursor.close();
+        db.close();
+        // return user
+        Log.d(TAG, "Fetching beer from Sqlite: " + beerList.toString());
+
+        return beerList;
+    }
+
+
+
 
     /**
      * Re crate database Delete all tables and create them again

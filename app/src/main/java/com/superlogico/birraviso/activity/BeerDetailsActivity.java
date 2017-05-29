@@ -34,7 +34,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AddBeerActivity extends Activity {
+public class BeerDetailsActivity extends Activity {
 
     private static final String BEER_NAME = "name";
     private static final String BEER_TRADEMARK = "trademark";
@@ -51,8 +51,9 @@ public class AddBeerActivity extends Activity {
     private static final String KEY_UID = "uid";
 
     private static final String TAG = RegisterActivity.class.getSimpleName();
-    private Button btnAddBeer;
-    private Button btnLinkToRegister;
+
+    private Button btnAddUpdateBeer;
+    private Button btnCancel;
     private EditText inputNamebeer;
     private EditText inputTrademark;
     private EditText inputStyle;
@@ -82,12 +83,46 @@ public class AddBeerActivity extends Activity {
             "Fruit Beer","Fruit and Spice Beer","Specialty Fruit Beer","Spice"," Herb"," or Vegetable Beer","Autumn Seasonal Beer","Winter Seasonal Beer",
             "Alternative Grain Beer","Alternative Sugar Beer","Classic Style Smoked Beer","Specialty Smoked Beer",
             "Wood-Aged Beer","Specialty Wood-Aged Beer","Clone Beer","Mixed-Style Beer","Experimental Beer","Dorada Pampeana","IPA Argenta"};
+    private TextInputLayout inputNamebeerLayout;
+    private TextInputLayout inputTrademarkLayout;
+    private TextInputLayout inputStyleLayout;
+    private TextInputLayout inputIbuLayout;
+    private TextInputLayout inputSrmLayout;
+    private TextInputLayout inputAlcoholLayout;
+    private TextInputLayout inputDescrpitionLayout;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_beer_form);
+
+        Intent myIntent = getIntent(); // gets the previously created intent
+        final String beerId = myIntent.getStringExtra(KEY_UID);
+        String beerName = myIntent.getStringExtra(BEER_NAME);
+        String beerTrademark = myIntent.getStringExtra(BEER_TRADEMARK);
+        String beerStyle = myIntent.getStringExtra(BEER_STYLE);
+        String beerIbu = myIntent.getStringExtra(BEER_IBU);
+        String beerSrm = myIntent.getStringExtra(BEER_SRM);
+        String beerAlcohol = myIntent.getStringExtra(BEER_ALCOHOL);
+        String beerDescription = myIntent.getStringExtra(BEER_DESCRIPTION);
+
+        // layout edittext
+        inputNamebeerLayout = (TextInputLayout) findViewById(R.id.namebeer_layout);
+        inputTrademarkLayout = (TextInputLayout) findViewById(R.id.trademark_layout);
+        inputStyleLayout = (TextInputLayout) findViewById(R.id.style_layout);
+        inputIbuLayout = (TextInputLayout) findViewById(R.id.ibu_layout);
+        inputSrmLayout = (TextInputLayout) findViewById(R.id.srm_layout);
+        inputAlcoholLayout = (TextInputLayout) findViewById(R.id.alcohol_layout);
+        inputDescrpitionLayout = (TextInputLayout) findViewById(R.id.description_layout);
+        inputNamebeerLayout.setHint("Nombre");
+        inputTrademarkLayout.setHint("Marca");
+        inputStyleLayout.setHint("Estilo");
+        inputIbuLayout.setHint("IBU");
+        inputSrmLayout.setHint("SRM");
+        inputAlcoholLayout.setHint("Alcohol");
+        inputDescrpitionLayout.setHint("Descripcion breve");
+
 
         inputNamebeer = (EditText) findViewById(R.id.namebeer);
 
@@ -97,8 +132,18 @@ public class AddBeerActivity extends Activity {
         inputSrm = (EditText) findViewById(R.id.srm);
         inputAlcohol = (EditText) findViewById(R.id.alcohol);
         inputDescrpition = (EditText) findViewById(R.id.description);
-        btnAddBeer = (Button) findViewById(R.id.btnAddUpdateBeer);
+        btnAddUpdateBeer = (Button) findViewById(R.id.btnAddUpdateBeer);
+        btnAddUpdateBeer.setText("Actualizar Birra");
+        btnCancel = (Button) findViewById(R.id.btnCancel);
 
+
+        inputNamebeer.setText(beerName);
+        inputTrademark.setText(beerTrademark);
+        inputStyle.setText(beerStyle);
+        inputIbu.setText(beerIbu);
+        inputSrm.setText(beerSrm);
+        inputAlcohol.setText(beerAlcohol);
+        inputDescrpition.setText(beerDescription);
 
         //Creating the instance of ArrayAdapter containing list of beer styles
         ArrayAdapter<String> adapter = new ArrayAdapter<String>
@@ -121,13 +166,24 @@ public class AddBeerActivity extends Activity {
         // Check if user is already logged in or not
         if (!session.isLoggedIn()) {
             // User is already logged in. Take him to main activity
-            Intent intent = new Intent(AddBeerActivity.this,MainActivity.class);
+            Intent intent = new Intent(BeerDetailsActivity.this,MainActivity.class);
             startActivity(intent);
             finish();
         }
 
-        // Login button Click Event
-        btnAddBeer.setOnClickListener(new View.OnClickListener() {
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+
+            public void onClick(View view) {
+                Intent intent = new Intent(BeerDetailsActivity.this,
+                        MainActivity.class);
+                intent.putExtra("homebrewer","true");
+                startActivity(intent);
+                finish();
+            }
+
+        });
+
+        btnAddUpdateBeer.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View view) {
                 String name = inputNamebeer.getText().toString().trim();
@@ -137,12 +193,10 @@ public class AddBeerActivity extends Activity {
                 String srm = inputSrm.getText().toString().trim();
                 String ibu = inputIbu.getText().toString().trim();
                 String trademark = inputTrademark.getText().toString().trim();
-
-
                 // Check for empty data in the form
                 if (!name.isEmpty() && !style.isEmpty()) {
                     // add beer
-                    addBeerToUserList(name,trademark,style,ibu,alcohol,srm,description,"","","","");
+                    updateBeerToUserList(beerId,name,trademark,style,ibu,alcohol,srm,description,"","","","");
                 } else {
                     // Prompt user to enter credentials
                     Toast.makeText(getApplicationContext(),
@@ -155,9 +209,10 @@ public class AddBeerActivity extends Activity {
 
     }
 
-    private void addBeerToUserList(String name,String trademark,String style,String ibu,
-                                   String alcohol,String srm,String description,String others,
-                                   String contact,String geo_x,String geo_y) {
+    private void updateBeerToUserList(String beerId,String name,String trademark,String style,String ibu,
+                                      String alcohol,String srm,String description,String others,
+                                      String contact,String geo_x,String geo_y) {
+        final String addBeerId = beerId;
         final String addName = name;
         final String addTrademark = trademark;
         final String addStyle = style;
@@ -175,25 +230,23 @@ public class AddBeerActivity extends Activity {
         showDialog();
 
         StringRequest strReq = new StringRequest(Request.Method.POST,
-                AppConfig.ADD_BEER_URL,new Response.Listener<String>() {
+                AppConfig.UPDATE_BEER_URL,new Response.Listener<String>() {
 
             @Override
             public void onResponse(String response) {
-                Log.d(TAG,"Guardando nueva birra : " + response.toString());
+                Log.d(TAG,"Actualizando birra : " + response.toString());
                 hideDialog();
 
                 try {
                     JSONObject jObj = new JSONObject(response);
                     boolean error = jObj.getBoolean("error");
 
-                    // Check for error node in json
-                    String id = jObj.getString("id");
-
                     if (!error) {
-                        db.addBeer(id,addName,addTrademark,addStyle,addIbu,addAlcohol,addSrm,addDescription,addOthers,"","","","");
+                        //db.addBeer(id, addName, addTrademark, addStyle, addIbu, addAlcohol, addSrm, addDescription, addOthers, "", "", "");
                         // Launch main activity
-                        Intent intent = new Intent(AddBeerActivity.this,
+                        Intent intent = new Intent(BeerDetailsActivity.this,
                                 MainActivity.class);
+                        intent.putExtra("homebrewer","true");
                         startActivity(intent);
                         finish();
                     }
@@ -219,6 +272,7 @@ public class AddBeerActivity extends Activity {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
+                params.put(KEY_UID,addBeerId);
                 params.put(BEER_NAME,addName);
                 params.put(BEER_TRADEMARK,addTrademark);
                 params.put(BEER_STYLE,addStyle);
@@ -242,10 +296,7 @@ public class AddBeerActivity extends Activity {
                 //..add other headers
                 return params;
             }
-
-
         };
-
 
         // Adding request to request queue
         String a = "0";

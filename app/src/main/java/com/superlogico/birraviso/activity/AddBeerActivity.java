@@ -137,12 +137,13 @@ public class AddBeerActivity extends Activity {
                 String srm = inputSrm.getText().toString().trim();
                 String ibu = inputIbu.getText().toString().trim();
                 String trademark = inputTrademark.getText().toString().trim();
+                HashMap<String, String> myProfileDetails = db.getProfileDetails("1000000");
 
 
                 // Check for empty data in the form
                 if (!name.isEmpty() && !style.isEmpty()) {
                     // add beer
-                    addBeerToUserList(name,trademark,style,ibu,alcohol,srm,description,"","","","");
+                    addBeerToUserList(name,trademark,style,ibu,alcohol,srm,description,myProfileDetails.get("hb_id"),"","","");
                 } else {
                     // Prompt user to enter credentials
                     Toast.makeText(getApplicationContext(),

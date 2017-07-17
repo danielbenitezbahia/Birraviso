@@ -50,6 +50,18 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     private static final String FAVORITE_ID = "id";
     private static final String FAVORITE_ID_HB = "hb_id";
 
+    // Profile table name
+    private static final String TABLE_PROFILE = "profile";
+    // Profile Table Columns names
+    private static final String PROFILE_ID = "id";
+    private static final String PROFILE_ID_HB = "hb_id";
+    private static final String PROFILE_CONTACT_INFO = "contact";
+    private static final String PROFILE_GEO_X = "geo_x";
+    private static final String PROFILE_GEO_Y = "geo_y";
+    private static final String PROFILE_WHATSAPP = "whatsapp";
+    private static final String PROFILE_FACEBOOK = "facebook";
+    private static final String PROFILE_EMAIL = "email";
+
     private static final String TABLE_USER = "user";
     // Login Table Columns names
     private static final String KEY_ID = "id";
@@ -86,6 +98,14 @@ public class SQLiteHandler extends SQLiteOpenHelper {
                  + ")";
         db.execSQL(CREATE_FAVORITE_TABLE);
 
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_PROFILE);
+        String CREATE_PROFILE_TABLE = "CREATE TABLE " + TABLE_PROFILE + "("
+                + PROFILE_ID + " INTEGER," + PROFILE_ID_HB + " TEXT,"
+                + PROFILE_CONTACT_INFO + " TEXT," + PROFILE_GEO_X + " TEXT, "
+                + PROFILE_GEO_Y + " TEXT, " + PROFILE_WHATSAPP + " TEXT, "+ PROFILE_FACEBOOK + " TEXT, "
+                + PROFILE_EMAIL + " TEXT" + " )";
+        db.execSQL(CREATE_PROFILE_TABLE);
+
         Log.d(TAG, "Database tables created");
     }
 
@@ -96,6 +116,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USER);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_BEER);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_FAVORITE);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_PROFILE);
 
         // Create tables again
         onCreate(db);
@@ -353,9 +374,6 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         return beerList;
     }
 
-
-
-
     /**
      * Re crate database Delete all tables and create them again
      * */
@@ -388,4 +406,63 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         return cursor.getCount() > 0;
     }
 
+    public void addProfile(String hb_id, String contact, String geo_x, String geo_y, String whatsapp,
+                        String facebook, String email) {
+
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(PROFILE_ID_HB, hb_id);
+        values.put(PROFILE_CONTACT_INFO, contact);
+        values.put(PROFILE_GEO_X, geo_x);
+        values.put(PROFILE_GEO_Y, geo_y);
+        values.put(PROFILE_WHATSAPP, whatsapp);
+        values.put(PROFILE_FACEBOOK, facebook);
+        values.put(PROFILE_EMAIL, email);
+
+        // Inserting Row
+        long id = db.insert(TABLE_PROFILE, null, values);
+        db.close(); // Closing database connection
+
+        Log.d(TAG, "Homebrewer profile inserted into sqlite: " + id);
+    }
+
+    /**
+     * Getting user data from database
+     * */
+    public HashMap<String, String> getProfileDetails(String hb_id) {
+        HashMap<String, String> profile = new HashMap<String, String>();
+        String selectQuery = "SELECT  * FROM " + TABLE_PROFILE + " WHERE hb_id = "+ hb_id;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        if(cursor.getCount() != 0) {
+            // Move to first row
+            cursor.moveToFirst();
+            if (cursor.getCount() > 0) {
+                profile.put("hb_id", cursor.getString(1));
+                profile.put("contact", cursor.getString(2));
+                profile.put("geo_x", cursor.getString(3));
+                profile.put("geo_y", cursor.getString(4));
+                profile.put("whatsapp", cursor.getString(5));
+                profile.put("facebook", cursor.getString(6));
+                profile.put("email", cursor.getString(7));
+            }
+        }
+        cursor.close();
+        db.close();
+        // return profile
+        Log.d(TAG, "Fetching user from Sqlite: " + profile.toString());
+
+        return profile;
+    }
+
+    public void deleteProfiles() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        // Delete All Rows
+        db.delete(TABLE_PROFILE, null, null);
+        db.close();
+
+        Log.d(TAG, "Deleted all profile info from sqlite");
+    }
 }

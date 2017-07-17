@@ -26,4 +26,6 @@ public class AppConfig {
 
     public static String GET_PROFILE_URL = "http://timbaviso.esy.es/android_login_api/get_profile.php";
 
+    public static String GET_ALL_PROFILES_URL = "http://timbaviso.esy.es/android_login_api/get_all_profiles.php";
+
 }

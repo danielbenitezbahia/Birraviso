@@ -221,7 +221,6 @@ public class MainActivity extends AppCompatActivity
                     intent.putExtra(BEER_ALCOHOL, beer.getAlcohol());
                     intent.putExtra(BEER_SRM, beer.getDrb());
                     intent.putExtra(BEER_DESCRIPTION, beer.getDescription());
-                    intent.putExtra(BEER_NAME, beer.getName());
 
                     startActivity(intent);
                     finish();
@@ -238,6 +237,9 @@ public class MainActivity extends AppCompatActivity
             }
 
         }));
+
+        this.getAllProfiles();
+        this.getMyProfileData();
 
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -435,7 +437,7 @@ public class MainActivity extends AppCompatActivity
             startActivity(intent);
             finish();
         } else if (id == R.id.nav_gallery) {
-            this.getMyProfileData();
+            this.editMyProfile();
         } else if (id == R.id.nav_slideshow) {
            //Intent intent = new Intent(MainActivity.this,MyBeerList.class);
            // startActivity(intent);
@@ -725,14 +727,17 @@ public class MainActivity extends AppCompatActivity
                     boolean error = jObj.getBoolean("error");
                     // Check for error node in json
                     if (!error) {
+
                         JSONObject profile = jObj.getJSONObject("profile");
+                        String id = (String) profile.get("id");
                         String contacto = (String) profile.get("contacto");
                         String whatsapp = (String) profile.get("whatsapp");
                         String email = (String) profile.get("email");
                         String facebook = (String) profile.get("facebook");
                         String latitud = (String) profile.get("geo_x");
                         String longitud = (String) profile.get("geo_y");
-                        editMyProfile(contacto, whatsapp, email, facebook, latitud, longitud);
+                        saveMyProfile(id, contacto, whatsapp, email, facebook, latitud, longitud);
+                      //  editMyProfile(contacto, whatsapp, email, facebook, latitud, longitud);
                     }
                 } catch (JSONException e) {
                     // JSON error
@@ -765,18 +770,73 @@ public class MainActivity extends AppCompatActivity
         AppController.getInstance().addToRequestQueue(strReq, tag_string_req);
     }
 
-    private void editMyProfile(String contacto,String whatsapp,String email,String facebook,String latitud,String longitud) {
+    private void saveMyProfile(String id, String contacto,String whatsapp,String email,String facebook,String latitud,String longitud) {
+        db.addProfile("1000000", contacto, latitud, longitud, whatsapp, facebook, email);
+    }
 
+    private void editMyProfile() {
+
+        HashMap<String, String> myProfileDetails = db.getProfileDetails("1000000");
         Intent intent = new Intent(MainActivity.this,UpdateHomebrewerInfoActivity.class);
-        intent.putExtra(CONTACT, contacto);
-        intent.putExtra(WHATSAPP, whatsapp);
-        intent.putExtra(EMAIL, email);
-        intent.putExtra(FACEBOOK, facebook);
-        intent.putExtra(LATITUD, latitud);
-        intent.putExtra(LONGITUD, longitud);
+        intent.putExtra(CONTACT, myProfileDetails.get("contact"));
+        intent.putExtra(WHATSAPP, myProfileDetails.get("whatsapp"));
+        intent.putExtra(EMAIL, myProfileDetails.get("email"));
+        intent.putExtra(FACEBOOK, myProfileDetails.get("facebook"));
+        intent.putExtra(LATITUD, myProfileDetails.get("geo_x"));
+        intent.putExtra(LONGITUD, myProfileDetails.get("geo_y"));
         startActivity(intent);
         finish();
     }
+
+    private void getAllProfiles() {
+        // Tag used to cancel the request
+        String tag_string_req = "req_login";
+
+        pDialog.setMessage("Trayendo lista de homebrewers...");
+        showDialog();
+
+        StringRequest strReq = new StringRequest(Request.Method.GET,
+                AppConfig.GET_ALL_PROFILES_URL, new Response.Listener<String>() {
+
+            @Override
+            public void onResponse(String response) {
+                Log.d(TAG, "Carga de homebrewer: " + response.toString());
+                hideDialog();
+
+                try {
+                    JSONObject jObj = new JSONObject(response);
+                    String beerString = jObj.toString();
+                    String corcheteAbre = "\\[";
+
+                    jObj = new JSONObject(beerString.replaceAll(corcheteAbre,"{").replaceAll("\\]","}"));
+
+                    saveAllProfiles(jObj);
+                } catch (JSONException e) {
+                    // JSON error
+                    e.printStackTrace();
+                    Toast.makeText(getApplicationContext(), "Json error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            }
+        }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e(TAG, "Login Error: " + error.getMessage());
+                Toast.makeText(getApplicationContext(),
+                        error.getMessage(), Toast.LENGTH_LONG).show();
+                hideDialog();
+            }
+        }) {
+
+
+        };
+
+        // Adding request to request queue
+        String a = "0";
+        AppController.getInstance().addToRequestQueue(strReq, tag_string_req);
+    }
+
+
 
     private void showDialog() {
         if (!pDialog.isShowing())
@@ -788,10 +848,33 @@ public class MainActivity extends AppCompatActivity
             pDialog.dismiss();
     }
 
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
+    private void saveAllProfiles(JSONObject json) {
+
+        db.deleteProfiles();
+        Iterator<String> iter = json.keys();
+        while (iter.hasNext()) {
+            String key = iter.next();
+            try {
+                JSONObject beer = json.getJSONObject(key);
+                String id = beer.getString("id");
+                String contacto = beer.getString("contacto");
+                String email = beer.getString("email");
+                String facebook = beer.getString("facebook");
+                String whatsapp = beer.getString("whatsapp");
+                String geo_x = beer.getString("geo_x");
+                String geo_y = beer.getString("geo_y");
+
+                db.addProfile(id, contacto, geo_x, geo_y, whatsapp, facebook, email);
+
+            } catch (JSONException e) {
+                Log.e(TAG, "JSON ERROR! " + e.getMessage());
+                Toast.makeText(getApplicationContext(),
+                        e.getMessage(), Toast.LENGTH_LONG).show();
+                hideDialog();
+            }
+        }
+    }
+
     public Action getIndexApiAction() {
         Thing object = new Thing.Builder()
                 .setName("Main Page") // TODO: Define a title for the content shown.

@@ -338,7 +338,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     public ArrayList<Beer> getMyFavoriteBeers() {
 
         ArrayList<Beer> beerList = new ArrayList<Beer>();
-        String selectQuery = "SELECT * FROM " + TABLE_BEER + " LEFT JOIN " + TABLE_FAVORITE + " ON beer.hb_id = favorite.hb_id";
+        String selectQuery = "SELECT * FROM " + TABLE_BEER + " INNER JOIN " + TABLE_FAVORITE + " ON beer.hb_id = favorite.hb_id";
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);

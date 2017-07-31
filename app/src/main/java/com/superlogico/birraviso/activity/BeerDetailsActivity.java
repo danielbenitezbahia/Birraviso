@@ -4,17 +4,19 @@ package com.superlogico.birraviso.activity;
  * Created by Daniel on 7/3/2017.
  */
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.TextInputLayout;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -34,7 +36,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
-public class BeerDetailsActivity extends Activity {
+public class BeerDetailsActivity extends AppCompatActivity {
 
     private static final String BEER_NAME = "name";
     private static final String BEER_TRADEMARK = "trademark";
@@ -47,20 +49,28 @@ public class BeerDetailsActivity extends Activity {
     private static final String BEER_CONTACT_INFO = "contact";
     private static final String BEER_GEO_X = "geo_x";
     private static final String BEER_GEO_Y = "geo_y";
+    private static final String BEER_HB_ID = "hb_id";
 
     private static final String KEY_UID = "uid";
 
     private static final String TAG = RegisterActivity.class.getSimpleName();
+    private static final String WHATSAPP = "whatsapp";
+    private static final String FACEBOOK = "facebook";
+    private static final String EMAIL = "email";
+    private static final String CONTACT_HB = "contact";
 
     private Button btnAddUpdateBeer;
     private Button btnCancel;
-    private EditText inputNamebeer;
-    private EditText inputTrademark;
-    private EditText inputStyle;
-    private EditText inputIbu;
-    private EditText inputSrm;
-    private EditText inputAlcohol;
-    private EditText inputDescrpition;
+    private TextView tvBeerName;
+    private TextView tvBeerTrademark;
+    private TextView tvBeerStyle;
+    private TextView tvBeerIbu;
+    private TextView tvBeerSrm;
+    private TextView tvBeerAlcohol;
+    private TextView tvBeerDescrpition;
+    private TextView tvWhatsapp;
+    private TextView tvFacebook;
+    private TextView tvEmail;
 
     private ProgressDialog pDialog;
     private SessionManager session;
@@ -83,13 +93,9 @@ public class BeerDetailsActivity extends Activity {
             "Fruit Beer","Fruit and Spice Beer","Specialty Fruit Beer","Spice"," Herb"," or Vegetable Beer","Autumn Seasonal Beer","Winter Seasonal Beer",
             "Alternative Grain Beer","Alternative Sugar Beer","Classic Style Smoked Beer","Specialty Smoked Beer",
             "Wood-Aged Beer","Specialty Wood-Aged Beer","Clone Beer","Mixed-Style Beer","Experimental Beer","Dorada Pampeana","IPA Argenta"};
-    private TextInputLayout inputNamebeerLayout;
-    private TextInputLayout inputTrademarkLayout;
-    private TextInputLayout inputStyleLayout;
-    private TextInputLayout inputIbuLayout;
-    private TextInputLayout inputSrmLayout;
-    private TextInputLayout inputAlcoholLayout;
-    private TextInputLayout inputDescrpitionLayout;
+    private HashMap<String, String> profileDetails;
+    private String beer_hb_id;
+    private android.support.v7.app.ActionBar actionBar;
 
 
     @Override
@@ -100,58 +106,40 @@ public class BeerDetailsActivity extends Activity {
         Intent myIntent = getIntent(); // gets the previously created intent
         final String beerId = myIntent.getStringExtra(KEY_UID);
         String beerName = myIntent.getStringExtra(BEER_NAME);
-        String beerTrademark = myIntent.getStringExtra(BEER_TRADEMARK);
+        //String beerTrademark = myIntent.getStringExtra(BEER_TRADEMARK);
         String beerStyle = myIntent.getStringExtra(BEER_STYLE);
         String beerIbu = myIntent.getStringExtra(BEER_IBU);
         String beerSrm = myIntent.getStringExtra(BEER_SRM);
         String beerAlcohol = myIntent.getStringExtra(BEER_ALCOHOL);
-        String beerDescription = myIntent.getStringExtra(BEER_DESCRIPTION);
-
-        // layout edittext
-        inputNamebeerLayout = (TextInputLayout) findViewById(R.id.namebeer_layout);
-        inputTrademarkLayout = (TextInputLayout) findViewById(R.id.trademark_layout);
-        inputStyleLayout = (TextInputLayout) findViewById(R.id.style_layout);
-        inputIbuLayout = (TextInputLayout) findViewById(R.id.ibu_layout);
-        inputSrmLayout = (TextInputLayout) findViewById(R.id.srm_layout);
-        inputAlcoholLayout = (TextInputLayout) findViewById(R.id.alcohol_layout);
-        inputDescrpitionLayout = (TextInputLayout) findViewById(R.id.description_layout);
-        inputNamebeerLayout.setHint("Nombre");
-        inputTrademarkLayout.setHint("Marca");
-        inputStyleLayout.setHint("Estilo");
-        inputIbuLayout.setHint("IBU");
-        inputSrmLayout.setHint("SRM");
-        inputAlcoholLayout.setHint("Alcohol");
-        inputDescrpitionLayout.setHint("Descripcion breve");
+        beer_hb_id = myIntent.getStringExtra(BEER_HB_ID);
 
 
-        inputNamebeer = (EditText) findViewById(R.id.namebeer);
+        tvBeerName = (TextView) findViewById(R.id.textview_title);
+        // tvBeerTrademark = (TextView) findViewById(R.id.trademark);
+        tvBeerStyle = (TextView) findViewById(R.id.textview_content);
+        tvBeerIbu = (TextView) findViewById(R.id.ibuBeer);
+        tvBeerSrm = (TextView) findViewById(R.id.srmBeer);
+        tvBeerAlcohol = (TextView) findViewById(R.id.alcoholBeer);
+        // tvBeerDescrpition = (TextView) findViewById(R.id.description);
+        tvWhatsapp = (TextView) findViewById(R.id.homebrewerWhatsapp);
+        tvFacebook = (TextView) findViewById(R.id.homebrewerFacebook);
+        tvEmail = (TextView) findViewById(R.id.homebrewerEmail);
 
-        inputTrademark = (EditText) findViewById(R.id.trademark);
-        inputStyle = (AutoCompleteTextView) findViewById(R.id.style);
-        inputIbu = (EditText) findViewById(R.id.ibu);
-        inputSrm = (EditText) findViewById(R.id.srm);
-        inputAlcohol = (EditText) findViewById(R.id.alcohol);
-        inputDescrpition = (EditText) findViewById(R.id.description);
-        btnAddUpdateBeer = (Button) findViewById(R.id.btnAddUpdateBeer);
-        btnAddUpdateBeer.setText("Actualizar Birra");
-        btnCancel = (Button) findViewById(R.id.btnCancel);
+        db = new SQLiteHandler(getApplicationContext());
 
+        profileDetails = db.getProfileDetails(beer_hb_id);
 
-        inputNamebeer.setText(beerName);
-        inputTrademark.setText(beerTrademark);
-        inputStyle.setText(beerStyle);
-        inputIbu.setText(beerIbu);
-        inputSrm.setText(beerSrm);
-        inputAlcohol.setText(beerAlcohol);
-        inputDescrpition.setText(beerDescription);
+        tvBeerName.setText(beerName);
+        // tvBeerTrademark.setText(beerTrademark);
+        tvBeerStyle.setText(beerStyle);
+        tvBeerIbu.setText("IBU: " + beerIbu);
+        tvBeerSrm.setText("SRM: " + beerSrm);
+        tvBeerAlcohol.setText("ABV: " + beerAlcohol);
+        tvWhatsapp.setText("WHATSAPP: " + profileDetails.get(WHATSAPP));
+        tvFacebook.setText("FACEBOOK: " + profileDetails.get(FACEBOOK));
+        tvEmail.setText("EMAIL: " + profileDetails.get(EMAIL));
+        // tvBeerDescrpition.setText(beerDescription);
 
-        //Creating the instance of ArrayAdapter containing list of beer styles
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>
-                (this,android.R.layout.select_dialog_item,beerStyles);
-
-        AutoCompleteTextView textView = (AutoCompleteTextView)
-                findViewById(R.id.style);
-        textView.setAdapter(adapter);
 
         // Progress dialog
         pDialog = new ProgressDialog(this);
@@ -171,7 +159,7 @@ public class BeerDetailsActivity extends Activity {
             finish();
         }
 
-        btnCancel.setOnClickListener(new View.OnClickListener() {
+     /*   btnCancel.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View view) {
                 Intent intent = new Intent(BeerDetailsActivity.this,
@@ -181,32 +169,36 @@ public class BeerDetailsActivity extends Activity {
                 finish();
             }
 
-        });
+        });*/
 
-        btnAddUpdateBeer.setOnClickListener(new View.OnClickListener() {
 
-            public void onClick(View view) {
-                String name = inputNamebeer.getText().toString().trim();
-                String style = inputStyle.getText().toString().trim();
-                String description = inputDescrpition.getText().toString().trim();
-                String alcohol = inputAlcohol.getText().toString().trim();
-                String srm = inputSrm.getText().toString().trim();
-                String ibu = inputIbu.getText().toString().trim();
-                String trademark = inputTrademark.getText().toString().trim();
-                // Check for empty data in the form
-                if (!name.isEmpty() && !style.isEmpty()) {
-                    // add beer
-                    updateBeerToUserList(beerId,name,trademark,style,ibu,alcohol,srm,description,"","","","");
-                } else {
-                    // Prompt user to enter credentials
-                    Toast.makeText(getApplicationContext(),
-                            "Please enter the credentials!",Toast.LENGTH_LONG)
-                            .show();
-                }
+        FloatingActionButton myFab = (FloatingActionButton) findViewById(R.id.fabAddHombrewerFavorites);
+        myFab.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                addThisHBtoFavorites();
             }
-
         });
 
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(BeerDetailsActivity.this,MainActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    private void addThisHBtoFavorites() {
+        if (db.addHBtoFavorites(beer_hb_id)) {
+            Toast.makeText(getApplicationContext(),
+                    "El cervecero " + profileDetails.get(CONTACT_HB) + " fue agregado exitosamente a tu lista de favoritos!", Toast.LENGTH_LONG)
+                    .show();
+        } else {
+            Toast.makeText(getApplicationContext(),
+                    "El cervecero " + profileDetails.get(CONTACT_HB) + " ya existe en tu lista de favoritos y podes ver todas sus birras publicadas yendo a la seccion Favoritos!", Toast.LENGTH_LONG)
+                    .show();
+        }
     }
 
     private void updateBeerToUserList(String beerId,String name,String trademark,String style,String ibu,

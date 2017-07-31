@@ -1,10 +1,17 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="fill_parent"
-              android:layout_height="fill_parent"
-              android:gravity="center"
-              android:orientation="vertical"
-              android:padding="10dp">
+<android.support.design.widget.CoordinatorLayout
+    android:id="@+id/main_content"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <LinearLayout
+        android:id="@+id/linearLayout5"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="vertical">
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                     android:layout_width="match_parent"
@@ -87,84 +94,65 @@
             android:textSize="20dp"/>
     </RelativeLayout>
 
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical">
+
+
+    <RelativeLayout
+        android:layout_width="382dp"
+        android:layout_height="207dp"
+        android:orientation="vertical">
 
         <LinearLayout
-            android:id="@+id/lineartopview"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_alignParentTop="true"
-            android:background="@android:color/holo_green_dark"
-            android:orientation="horizontal">
+            android:id="@+id/contactInformation"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_margin="20dp"
+            android:orientation="vertical">
 
             <TextView
-                android:id="@+id/headerContact"
+                android:id="@+id/homebrewerWhatsapp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
                 android:gravity="center"
-                android:text="Datos de Contacto "
+                android:text="Whatsapp: "
                 android:textColor="@android:color/black"
                 android:textSize="20dp"/>
 
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/linearmiddleview"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_above="@+id/linearview"
-            android:layout_below="@+id/lineartopview"
-            android:orientation="horizontal">
-
-            <LinearLayout
+            <TextView
+                android:id="@+id/homebrewerFacebook"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="vertical">
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Facebook: "
+                android:textColor="@android:color/black"
+                android:textSize="20dp"/>
 
-                <TextView
-                    android:id="@+id/homebrewerWhatsapp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:gravity="center"
-                    android:text="Whatsapp: "
-                    android:textColor="@android:color/black"
-                    android:textSize="20dp"/>
-
-                <TextView
-                    android:id="@+id/homebrewerFacebook"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="Facebook: "
-                    android:textColor="@android:color/black"
-                    android:textSize="20dp"/>
-
-                <TextView
-                    android:id="@+id/homebrewerEmail"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_toRightOf="@+id/alcoholBeer"
-                    android:gravity="center"
-                    android:text="Email: "
-                    android:textColor="@android:color/black"
-                    android:textSize="20dp"/>
-            </LinearLayout>
+            <TextView
+                android:id="@+id/homebrewerEmail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/alcoholBeer"
+                android:gravity="center"
+                android:text="Email: "
+                android:textColor="@android:color/black"
+                android:textSize="20dp"/>
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/linearview"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_alignParentBottom="true"
-            android:background="@android:color/holo_green_dark"
-            android:orientation="horizontal">
-        </LinearLayout>
+
     </RelativeLayout>
-</LinearLayout>
+    </LinearLayout>
+
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fabAddHombrewerFavorites"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_margin="@dimen/fab_margin"
+        android:clickable="true"
+        android:visibility="visible"
+        app:srcCompat="@android:drawable/ic_input_add" />
+
+</android.support.design.widget.CoordinatorLayout>

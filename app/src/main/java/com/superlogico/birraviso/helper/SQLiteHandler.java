@@ -211,7 +211,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         values.put(BEER_TRADEMARK, trademark);
         values.put(BEER_STYLE, style);
         values.put(BEER_IBU, ibu);
-      //  values.put(BEER_ALCOHOL, alcohol);
+        values.put(BEER_ALCOHOL, alcohol);
         values.put(BEER_SMR, srm);
         values.put(BEER_DESCRIPTION, description);
         values.put(BEER_OTHERS, others);
@@ -279,14 +279,14 @@ public class SQLiteHandler extends SQLiteOpenHelper {
             // String drb, String alcohol, String description, String contact, String others
             Beer beer;
             HashMap<String, String> userDetails = getUserDetails();
-            String unique_id = userDetails.get(KEY_UID);
-            beer = new Beer(cursor.getString(0), unique_id, cursor.getString(1), cursor.getString(3), cursor.getString(2),
+            //String unique_id = userDetails.get(KEY_UID);
+            beer = new Beer(cursor.getString(0), cursor.getString(12), cursor.getString(1), cursor.getString(3), cursor.getString(2),
                     cursor.getString(4), cursor.getString(5), cursor.getString(6), cursor.getString(7), cursor.getString(9),
                     cursor.getString(8));
             beerList.add(beer);
             while (cursor.moveToNext()) {
 
-                beer = new Beer(cursor.getString(0), unique_id, cursor.getString(1), cursor.getString(3), cursor.getString(2),
+                beer = new Beer(cursor.getString(0), cursor.getString(12), cursor.getString(1), cursor.getString(3), cursor.getString(2),
                         cursor.getString(4), cursor.getString(5), cursor.getString(6), cursor.getString(7), cursor.getString(9),
                         cursor.getString(8));
                 beerList.add(beer);
@@ -338,7 +338,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     public ArrayList<Beer> getMyFavoriteBeers() {
 
         ArrayList<Beer> beerList = new ArrayList<Beer>();
-        String selectQuery = "SELECT * FROM " + TABLE_BEER + " JOIN " + TABLE_FAVORITE + " WHERE beer.hb_id = favorite.hb_id";
+        String selectQuery = "SELECT * FROM " + TABLE_BEER + " LEFT JOIN " + TABLE_FAVORITE + " ON beer.hb_id = favorite.hb_id";
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -464,5 +464,37 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         db.close();
 
         Log.d(TAG, "Deleted all profile info from sqlite");
+    }
+
+    public boolean addHBtoFavorites(String hb_id) {
+
+        if(!existsFavoriteHB(hb_id)) {
+
+            SQLiteDatabase db = this.getWritableDatabase();
+
+            ContentValues values = new ContentValues();
+            values.put(FAVORITE_ID_HB,hb_id);
+
+
+            // Inserting Row
+            long id = db.insert(TABLE_FAVORITE,null,values);
+            db.close(); // Closing database connection
+
+            Log.d(TAG,"Homebrewer favorite inserted into sqlite: " + id);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean existsFavoriteHB(String hb_id) {
+
+        ArrayList<Beer> beerList = new ArrayList<Beer>();
+        String selectQuery = "SELECT * FROM " + TABLE_FAVORITE + " WHERE id =" + hb_id;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        // Move to first row
+        cursor.moveToFirst();
+        return cursor.getCount() > 0;
     }
 }

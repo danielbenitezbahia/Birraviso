@@ -95,6 +95,7 @@ public class MainActivity extends AppCompatActivity
     private static final String BEER_OTHERS = "others";
     private static final String BEER_CONTACT_INFO = "contact";
     private static final String TRUE_HB = "true";
+    private static final String BEER_HB_ID = "hb_id";
 
     private static final String CONTACT = "contacto";
     private static final String WHATSAPP = "whatsapp";
@@ -213,6 +214,7 @@ public class MainActivity extends AppCompatActivity
                     finish();
                 } else if(!homebrewerMode && !deleteMode){
                     Intent intent = new Intent(MainActivity.this,BeerDetailsActivity.class);
+                    intent.putExtra(BEER_HB_ID, beer.getUser_id());
                     intent.putExtra(KEY_UID, beer.getId());
                     intent.putExtra(BEER_NAME, beer.getName());
                     intent.putExtra(BEER_TRADEMARK, beer.getTrademark());

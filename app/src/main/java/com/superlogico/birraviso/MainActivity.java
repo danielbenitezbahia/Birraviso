@@ -420,7 +420,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void showMyFavoriteHomebrewerBeers() {
-        db.getMyFavoriteBeers();
+
         beerList = db.getMyFavoriteBeers();
         bAdapter.setBeerList(beerList);
         bAdapter.notifyDataSetChanged();

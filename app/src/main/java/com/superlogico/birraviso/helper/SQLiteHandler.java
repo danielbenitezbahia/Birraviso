@@ -61,6 +61,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     private static final String PROFILE_WHATSAPP = "whatsapp";
     private static final String PROFILE_FACEBOOK = "facebook";
     private static final String PROFILE_EMAIL = "email";
+    private static final String PROFILE_PUBLIC_EMAIL = "publicEmail";
 
     private static final String TABLE_USER = "user";
     // Login Table Columns names
@@ -95,14 +96,14 @@ public class SQLiteHandler extends SQLiteOpenHelper {
 
         String CREATE_FAVORITE_TABLE = "CREATE TABLE " + TABLE_FAVORITE + "("
                 + FAVORITE_ID + " INTEGER PRIMARY KEY," + FAVORITE_ID_HB + " TEXT"
-                 + ")";
+                + ")";
         db.execSQL(CREATE_FAVORITE_TABLE);
 
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PROFILE);
         String CREATE_PROFILE_TABLE = "CREATE TABLE " + TABLE_PROFILE + "("
                 + PROFILE_ID + " INTEGER," + PROFILE_ID_HB + " TEXT,"
                 + PROFILE_CONTACT_INFO + " TEXT," + PROFILE_GEO_X + " TEXT, "
-                + PROFILE_GEO_Y + " TEXT, " + PROFILE_WHATSAPP + " TEXT, "+ PROFILE_FACEBOOK + " TEXT, "
+                + PROFILE_GEO_Y + " TEXT, " + PROFILE_WHATSAPP + " TEXT, "+ PROFILE_FACEBOOK + " TEXT, " + PROFILE_PUBLIC_EMAIL + " TEXT, "
                 + PROFILE_EMAIL + " TEXT" + " )";
         db.execSQL(CREATE_PROFILE_TABLE);
 
@@ -231,8 +232,8 @@ public class SQLiteHandler extends SQLiteOpenHelper {
      * Storing beer details in database
      * */
     public void addMyBeer(String idbackend, String name, String trademark, String style, String ibu,
-                        String alcohol, String srm, String description, String others,
-                        String contact, String geo_x, String geo_y, String uid) {
+                          String alcohol, String srm, String description, String others,
+                          String contact, String geo_x, String geo_y, String uid) {
 
         int idb = Integer.valueOf(idbackend);
         SQLiteDatabase db = this.getWritableDatabase();
@@ -407,7 +408,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     }
 
     public void addProfile(String hb_id, String contact, String geo_x, String geo_y, String whatsapp,
-                        String facebook, String email) {
+                           String facebook, String publicEmail, String email) {
 
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -418,7 +419,9 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         values.put(PROFILE_GEO_Y, geo_y);
         values.put(PROFILE_WHATSAPP, whatsapp);
         values.put(PROFILE_FACEBOOK, facebook);
+        values.put(PROFILE_EMAIL, publicEmail);
         values.put(PROFILE_EMAIL, email);
+
 
         // Inserting Row
         long id = db.insert(TABLE_PROFILE, null, values);
@@ -446,7 +449,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
                 profile.put("geo_y", cursor.getString(4));
                 profile.put("whatsapp", cursor.getString(5));
                 profile.put("facebook", cursor.getString(6));
-                profile.put("email", cursor.getString(7));
+                profile.put("publicEmail", cursor.getString(7));
             }
         }
         cursor.close();
@@ -497,4 +500,51 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         cursor.moveToFirst();
         return cursor.getCount() > 0;
     }
+
+    public HashMap<String,String> getMyProfileDetails() {
+
+        String myEmail = "";
+        HashMap<String, String> user  = new HashMap<String, String>();
+        String selectQuery = "SELECT email FROM " + TABLE_USER;
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        if(cursor.getCount() != 0) {
+            // Move to first row
+            cursor.moveToFirst();
+            if (cursor.getCount() > 0) {
+                myEmail = cursor.getString(0);
+            }
+        }
+        cursor.close();
+
+        // Get profile filtering by email
+
+        HashMap<String, String> profile = new HashMap<String, String>();
+        selectQuery = "SELECT * FROM " + TABLE_PROFILE + " WHERE email = '" +myEmail + "'";
+
+
+         cursor = db.rawQuery(selectQuery, null);
+        if(cursor.getCount() != 0) {
+            // Move to first row
+            cursor.moveToFirst();
+            if (cursor.getCount() > 0) {
+                profile.put("hb_id", cursor.getString(1));
+                profile.put("contact", cursor.getString(2));
+                profile.put("geo_x", cursor.getString(3));
+                profile.put("geo_y", cursor.getString(4));
+                profile.put("whatsapp", cursor.getString(5));
+                profile.put("facebook", cursor.getString(6));
+                profile.put("publicEmail", cursor.getString(7));
+            }
+        }
+        cursor.close();
+        db.close();
+        // return profile
+        Log.d(TAG, "Fetching user from Sqlite: " + profile.toString());
+
+        return profile;
+
+    }
+
+
 }

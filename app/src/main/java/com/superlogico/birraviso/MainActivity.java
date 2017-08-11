@@ -24,12 +24,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.Toast;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -50,8 +45,6 @@ import com.superlogico.birraviso.adapter.DividerItemDecoration;
 import com.superlogico.birraviso.adapter.RecyclerTouchListener;
 import com.superlogico.birraviso.app.AppConfig;
 import com.superlogico.birraviso.app.AppController;
-import com.superlogico.birraviso.fragment.BeerList;
-import com.superlogico.birraviso.fragment.FavoriteList;
 import com.superlogico.birraviso.helper.SQLiteHandler;
 import com.superlogico.birraviso.helper.SessionManager;
 import com.superlogico.birraviso.model.Beer;
@@ -773,12 +766,12 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void saveMyProfile(String id, String contacto,String whatsapp,String email,String facebook,String latitud,String longitud) {
-        db.addProfile("1000000", contacto, latitud, longitud, whatsapp, facebook, email);
+        db.addProfile("1000000", contacto, latitud, longitud, whatsapp, facebook, email, email);
     }
 
     private void editMyProfile() {
 
-        HashMap<String, String> myProfileDetails = db.getProfileDetails("1000000");
+        HashMap<String, String> myProfileDetails = db.getMyProfileDetails();
         Intent intent = new Intent(MainActivity.this,UpdateHomebrewerInfoActivity.class);
         intent.putExtra(CONTACT, myProfileDetails.get("contact"));
         intent.putExtra(WHATSAPP, myProfileDetails.get("whatsapp"));
@@ -866,7 +859,7 @@ public class MainActivity extends AppCompatActivity
                 String geo_x = beer.getString("geo_x");
                 String geo_y = beer.getString("geo_y");
 
-                db.addProfile(id, contacto, geo_x, geo_y, whatsapp, facebook, email);
+                db.addProfile(id, contacto, geo_x, geo_y, whatsapp, facebook, email, email);
 
             } catch (JSONException e) {
                 Log.e(TAG, "JSON ERROR! " + e.getMessage());

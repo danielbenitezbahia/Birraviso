@@ -8,10 +8,8 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.TextInputLayout;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -65,23 +63,6 @@ public class AddBeerActivity extends Activity {
     private SessionManager session;
     private SQLiteHandler db;
     private static AppController appController;
-    private String[] beerStyles = {"American Light Lager","American Lager","Cream Ale","American Wheat Beer","International Pale Lager",
-            "International Amber Lager","International Dark Lager","Czech Pale Lager","Czech Premium Pale Lager","Czech Amber Lager",
-            "Czech Dark Lager","Munich Helles","Festbier","Helles Bock","German Leichtbier","Kölsch","German Helles Exportbier","German Pils",
-            "Märzen","Rauchbier","Dunkles Bock","Vienna Lager","Altbier","Pale Kellerbier","Amber Kellerbier","Munich Dunkel","Schwarzbier",
-            "Doppelbock","Eisbock","Baltic Porter","Weissbier","Dunkles Weissbier","Weizenbock","Ordinary Bitter","Best Bitter","Strong Bitter",
-            "British Golden Ale","Australian Sparkling Ale","English IPA","Dark Mild","British Brown Ale","English Porter","Scottish Light",
-            "Scottish Heavy","Scottish Export","Irish Red Ale","Irish Stout","Irish Extra Stout","Sweet Stout","Oatmeal Stout","Tropical Stout",
-            "Foreign Extra Stout","British Strong Ale","Old Ale","Wee Heavy","English Barleywine","Blonde Ale","American Pale Ale","American Amber Ale",
-            "California Common ","American Brown Ale","American Porter","American Stout","Imperial Stout","American IPA","Specialty IPA - Belgian IPA",
-            "Specialty IPA - Black IPA","Specialty IPA - Brown IPA","Specialty IPA - Red IPA","Specialty IPA - Rye IPA","Specialty IPA - White IPA",
-            "Double IPA","American Strong Ale","American Barleywine","Wheatwine","Berliner Weisse","Flanders Red Ale","Oud Bruin","Lambic","Gueuze ",
-            "Fruit Lambic","Witbier","Belgian Pale Ale","Bière de Garde","Belgian Blond Ale","Saison","Belgian Golden Strong Ale","Trappist Single",
-            "Belgian Dubbel","Belgian Tripel","Belgian Dark Strong Ale","Gose","Kentucky Common","Lichtenhainer","London Brown Ale","Piwo Grodziskie",
-            "Pre-Prohibition Lager","Pre-Prohibition Porter","Roggenbier","Sahti","Brett Beer","Mixed-Fermentation Sour Beer","Wild Specialty Beer",
-            "Fruit Beer","Fruit and Spice Beer","Specialty Fruit Beer","Spice"," Herb"," or Vegetable Beer","Autumn Seasonal Beer","Winter Seasonal Beer",
-            "Alternative Grain Beer","Alternative Sugar Beer","Classic Style Smoked Beer","Specialty Smoked Beer",
-            "Wood-Aged Beer","Specialty Wood-Aged Beer","Clone Beer","Mixed-Style Beer","Experimental Beer","Dorada Pampeana","IPA Argenta"};
 
 
     @Override
@@ -98,15 +79,6 @@ public class AddBeerActivity extends Activity {
         inputAlcohol = (EditText) findViewById(R.id.alcohol);
         inputDescrpition = (EditText) findViewById(R.id.description);
         btnAddBeer = (Button) findViewById(R.id.btnAddUpdateBeer);
-
-
-        //Creating the instance of ArrayAdapter containing list of beer styles
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>
-                (this,android.R.layout.select_dialog_item,beerStyles);
-
-        AutoCompleteTextView textView = (AutoCompleteTextView)
-                findViewById(R.id.style);
-        textView.setAdapter(adapter);
 
         // Progress dialog
         pDialog = new ProgressDialog(this);

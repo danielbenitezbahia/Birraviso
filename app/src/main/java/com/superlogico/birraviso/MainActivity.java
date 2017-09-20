@@ -766,7 +766,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void saveMyProfile(String id, String contacto,String whatsapp,String email,String facebook,String latitud,String longitud) {
-        db.addProfile("1000000", contacto, latitud, longitud, whatsapp, facebook, email, email);
+        //db.addProfile("1000000", contacto, latitud, longitud, whatsapp, facebook, email, email);
+        db.addMyProfile(contacto, latitud, longitud, whatsapp, facebook, email, email);
     }
 
     private void editMyProfile() {
@@ -775,7 +776,7 @@ public class MainActivity extends AppCompatActivity
         Intent intent = new Intent(MainActivity.this,UpdateHomebrewerInfoActivity.class);
         intent.putExtra(CONTACT, myProfileDetails.get("contact"));
         intent.putExtra(WHATSAPP, myProfileDetails.get("whatsapp"));
-        intent.putExtra(EMAIL, myProfileDetails.get("email"));
+        intent.putExtra(EMAIL, myProfileDetails.get("publicEmail"));
         intent.putExtra(FACEBOOK, myProfileDetails.get("facebook"));
         intent.putExtra(LATITUD, myProfileDetails.get("geo_x"));
         intent.putExtra(LONGITUD, myProfileDetails.get("geo_y"));
@@ -800,10 +801,10 @@ public class MainActivity extends AppCompatActivity
 
                 try {
                     JSONObject jObj = new JSONObject(response);
-                    String beerString = jObj.toString();
-                    String corcheteAbre = "\\[";
+                   // String beerString = jObj.toString();
+                   // String corcheteAbre = "\\[";
 
-                    jObj = new JSONObject(beerString.replaceAll(corcheteAbre,"{").replaceAll("\\]","}"));
+                   // jObj = new JSONObject(beerString.replaceAll(corcheteAbre,"{").replaceAll("\\]","}"));
 
                     saveAllProfiles(jObj);
                 } catch (JSONException e) {

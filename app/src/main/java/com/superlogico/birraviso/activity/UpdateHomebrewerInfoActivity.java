@@ -131,7 +131,7 @@ public class UpdateHomebrewerInfoActivity extends FragmentActivity
 
 
         inputDescrpitionLayout = (TextInputLayout) findViewById(R.id.contact_layout);
-        inputDescrpitionLayout.setHint("Tu mombre o el nombre de tu marca de birras");
+        inputDescrpitionLayout.setHint("Tu nombre o el nombre de tu marca de birras");
 
         inputWhatsappLayout = (TextInputLayout) findViewById(R.id.contact_whatsapp_layout);
         inputWhatsappLayout.setHint("Tu nro. de celular / Whatsapp");

@@ -50,6 +50,7 @@ public class AddBeerActivity extends Activity {
 
     private static final String TAG = RegisterActivity.class.getSimpleName();
     private Button btnAddBeer;
+    private Button btnCancel;
     private Button btnLinkToRegister;
     private EditText inputNamebeer;
     private EditText inputTrademark;
@@ -79,6 +80,7 @@ public class AddBeerActivity extends Activity {
         inputAlcohol = (EditText) findViewById(R.id.alcohol);
         inputDescrpition = (EditText) findViewById(R.id.description);
         btnAddBeer = (Button) findViewById(R.id.btnAddUpdateBeer);
+        btnCancel = (Button) findViewById(R.id.btnCancel);
 
         // Progress dialog
         pDialog = new ProgressDialog(this);
@@ -122,6 +124,19 @@ public class AddBeerActivity extends Activity {
                             "Please enter the credentials!",Toast.LENGTH_LONG)
                             .show();
                 }
+            }
+
+        });
+
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+
+            public void onClick(View view) {
+                Intent intent = new Intent(AddBeerActivity.this,
+                        MainActivity.class);
+                intent.putExtra("homebrewer","true");
+                startActivity(intent);
+                finish();
+
             }
 
         });

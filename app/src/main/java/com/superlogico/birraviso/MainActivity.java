@@ -414,6 +414,7 @@ public class MainActivity extends AppCompatActivity
 
     private void showMyFavoriteHomebrewerBeers() {
 
+        this.getBeerList();
         beerList = db.getMyFavoriteBeers();
         bAdapter.setBeerList(beerList);
         bAdapter.notifyDataSetChanged();
@@ -442,6 +443,8 @@ public class MainActivity extends AppCompatActivity
 
 
         } else if (id == R.id.nav_manage) {
+            this.homebrewerMode = false;
+            this.getBeerList();
 
         } else if (id == R.id.nav_share) {
 

@@ -419,7 +419,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         values.put(PROFILE_GEO_Y, geo_y);
         values.put(PROFILE_WHATSAPP, whatsapp);
         values.put(PROFILE_FACEBOOK, facebook);
-        values.put(PROFILE_EMAIL, publicEmail);
+        values.put(PROFILE_PUBLIC_EMAIL, publicEmail);
         values.put(PROFILE_EMAIL, email);
 
 

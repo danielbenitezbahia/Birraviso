@@ -4,16 +4,12 @@ package com.superlogico.birraviso.activity;
  * Created by Daniel on 7/3/2017.
  */
 
-import android.app.ActionBar;
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -56,8 +52,8 @@ public class BeerDetailsActivity extends AppCompatActivity {
     private static final String TAG = RegisterActivity.class.getSimpleName();
     private static final String WHATSAPP = "whatsapp";
     private static final String FACEBOOK = "facebook";
-    private static final String EMAIL = "email";
     private static final String CONTACT_HB = "contact";
+    private static final String PUBLIC_EMAIL = "publicEmail";
 
     private Button btnAddUpdateBeer;
     private Button btnCancel;
@@ -137,7 +133,7 @@ public class BeerDetailsActivity extends AppCompatActivity {
         tvBeerAlcohol.setText("ABV: " + beerAlcohol);
         tvWhatsapp.setText("WHATSAPP: " + profileDetails.get(WHATSAPP));
         tvFacebook.setText("FACEBOOK: " + profileDetails.get(FACEBOOK));
-        tvEmail.setText("EMAIL: " + profileDetails.get(EMAIL));
+        tvEmail.setText("EMAIL: " + profileDetails.get(PUBLIC_EMAIL));
         // tvBeerDescrpition.setText(beerDescription);
 
 

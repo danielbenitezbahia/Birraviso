@@ -60,6 +60,7 @@ public class BeerDetailsActivity extends AppCompatActivity {
     private static final String FACEBOOK = "facebook";
     private static final String CONTACT_HB = "contact";
     private static final String PUBLIC_EMAIL = "publicEmail";
+    private static final String FAVORITE_MODE = "favorite_mode";
 
     private Button btnAddUpdateBeer;
     private Button btnCancel;
@@ -102,6 +103,7 @@ public class BeerDetailsActivity extends AppCompatActivity {
     private Bitmap mFinalBitmap;
     private ImageView imgIcon;
     private String beer_id;
+    private Boolean favoriteMode;
 
 
     @Override
@@ -127,6 +129,7 @@ public class BeerDetailsActivity extends AppCompatActivity {
         String beerAlcohol = myIntent.getStringExtra(BEER_ALCOHOL);
         beer_hb_id = myIntent.getStringExtra(BEER_HB_ID);
         beer_id = myIntent.getStringExtra(BEER_ID);
+        favoriteMode = myIntent.getBooleanExtra(FAVORITE_MODE, false);
 
 
         tvBeerName = (TextView) findViewById(R.id.textview_title);

@@ -63,6 +63,7 @@ public class MainActivity extends AppCompatActivity
 
     private static final String TAG = RegisterActivity.class.getSimpleName();
     private static final String ID_BEERS_TO_DELETE = "id_beers_to_delete";
+    private static final String FAVORITE_MODE = "favorite_mode";
     private SQLiteHandler db;
     private SessionManager session;
     private ProgressDialog pDialog;
@@ -106,6 +107,7 @@ public class MainActivity extends AppCompatActivity
     private ActionBarDrawerToggle toggle;
     private FloatingActionButton addBeerFab;
     private boolean favoritesList;
+    private boolean favoriteMode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -177,11 +179,16 @@ public class MainActivity extends AppCompatActivity
         String isHomebrewer = myIntent.getStringExtra("homebrewer");
         String isFavoriteMode = myIntent.getStringExtra("favorites");
         if(TRUE_HB.equals(isHomebrewer)){
+            favoriteMode = false;
             homebrewerMode = true;
             this.getMyBeerList();
         }else{
             if(!TRUE_HB.equals(isFavoriteMode)){
+                favoriteMode = false;
                 this.getBeerList();
+            }else{
+                favoriteMode = true;
+                this.showMyFavoriteHomebrewerBeers();
             }
         }
 
@@ -215,6 +222,7 @@ public class MainActivity extends AppCompatActivity
                     startActivity(intent);
                     finish();
                 } else if(!homebrewerMode && !deleteMode){
+
                     Intent intent = new Intent(MainActivity.this,BeerDetailsActivity.class);
                     intent.putExtra(BEER_HB_ID, beer.getUser_id());
                     intent.putExtra(BEER_ID, beer.getId());
@@ -225,6 +233,7 @@ public class MainActivity extends AppCompatActivity
                     intent.putExtra(BEER_ALCOHOL, beer.getAlcohol());
                     intent.putExtra(BEER_SRM, beer.getDrb());
                     intent.putExtra(BEER_DESCRIPTION, beer.getDescription());
+                    intent.putExtra(FAVORITE_MODE, favoriteMode);
 
                     startActivity(intent);
                     finish();
@@ -420,6 +429,7 @@ public class MainActivity extends AppCompatActivity
                 this.getBeerList();
                 return true;
             case R.id.autorenew_icon:
+                favoriteMode = false;
                 this.getBeerList();
                 return true;
             default:
@@ -432,6 +442,7 @@ public class MainActivity extends AppCompatActivity
         beerList = db.getMyFavoriteBeers();
         bAdapter.setBeerList(beerList);
         bAdapter.notifyDataSetChanged();
+        favoriteMode = true;
         this.favoritesList = false;
     }
 
@@ -453,6 +464,7 @@ public class MainActivity extends AppCompatActivity
            //Intent intent = new Intent(MainActivity.this,MyBeerList.class);
            // startActivity(intent);
            // finish();
+            favoriteMode = false;
             this.getMyBeerList();
             addBeerFab.setVisibility(View.VISIBLE);
 

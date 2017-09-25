@@ -344,7 +344,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     public ArrayList<Beer> getMyFavoriteBeers() {
 
         ArrayList<Beer> beerList = new ArrayList<Beer>();
-        String selectQuery = "SELECT * FROM " + TABLE_BEER + " INNER JOIN " + TABLE_FAVORITE + " ON beer.hb_id = favorite.hb_id";
+        String selectQuery = "SELECT * FROM " + TABLE_FAVORITE;
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -358,17 +358,13 @@ public class SQLiteHandler extends SQLiteOpenHelper {
             // String beer_id, String user_id, String name, String style, String trademark, String ibu,
             // String drb, String alcohol, String description, String contact, String others
             Beer beer;
-            HashMap<String, String> userDetails = getUserDetails();
-            String unique_id = userDetails.get(KEY_UID);
-            beer = new Beer(cursor.getString(0),cursor.getString(14),cursor.getString(1),cursor.getString(3),cursor.getString(2),
-                    cursor.getString(4),cursor.getString(5),cursor.getString(6),cursor.getString(7),cursor.getString(9),
-                    cursor.getString(8));
+           // HashMap<String, String> userDetails = getUserDetails();
+           // String unique_id = userDetails.get(KEY_UID);
+            beer = new Beer(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), null, null, null, null, null, null);
+
             beerList.add(beer);
             while (cursor.moveToNext()) {
-
-                beer = new Beer(cursor.getString(0),cursor.getString(14),cursor.getString(1),cursor.getString(3),cursor.getString(2),
-                        cursor.getString(4),cursor.getString(5),cursor.getString(6),cursor.getString(7),cursor.getString(9),
-                        cursor.getString(8));
+                beer = new Beer(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), null, null, null, null, null, null);
                 beerList.add(beer);
             }
         }
@@ -410,6 +406,24 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         // Move to first row
         cursor.moveToFirst();
         return cursor.getCount() > 0;
+    }
+
+    public Beer getBeer(String id) {
+
+        Beer beer = new Beer();
+
+        String selectQuery = "SELECT * FROM " + TABLE_BEER + " WHERE id =" + id;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        // Move to first row
+        cursor.moveToFirst();
+        if(cursor.getCount() > 0) {
+            beer.setName(cursor.getString(0));
+            beer.setTrademark(cursor.getString(1));
+            beer.setStyle(cursor.getString(2));
+        }
+        return beer;
     }
 
     public void addProfile(String hb_id, String contact, String geo_x, String geo_y, String whatsapp,
@@ -476,15 +490,18 @@ public class SQLiteHandler extends SQLiteOpenHelper {
 
     public boolean addHBtoFavorites(String hb_id, String id) {
 
+        Beer beer;
+
         if(!existsFavoriteHB(hb_id)) {
 
             SQLiteDatabase db = this.getWritableDatabase();
-
+            beer = this.getBeer(id);
             ContentValues values = new ContentValues();
             values.put(FAVORITE_ID, id);
             values.put(FAVORITE_ID_HB,hb_id);
-
-
+            values.put(FAVORITE_NAME, beer.getName());
+            values.put(FAVORITE_TRADEMARK, beer.getTrademark());
+            values.put(FAVORITE_STYLE, beer.getStyle());
             // Inserting Row
             long favoriteId = db.insert(TABLE_FAVORITE,null,values);
             db.close(); // Closing database connection

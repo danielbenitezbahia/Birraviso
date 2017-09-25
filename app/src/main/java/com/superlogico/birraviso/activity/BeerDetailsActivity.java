@@ -6,14 +6,22 @@ package com.superlogico.birraviso.activity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -25,6 +33,7 @@ import com.superlogico.birraviso.app.AppConfig;
 import com.superlogico.birraviso.app.AppController;
 import com.superlogico.birraviso.helper.SQLiteHandler;
 import com.superlogico.birraviso.helper.SessionManager;
+import com.superlogico.birraviso.helper.Util.Util;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -92,12 +101,18 @@ public class BeerDetailsActivity extends AppCompatActivity {
     private HashMap<String, String> profileDetails;
     private String beer_hb_id;
     private android.support.v7.app.ActionBar actionBar;
+    private Drawable mDrawable;
+    private Bitmap mFinalBitmap;
+    private ImageView imgIcon;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_beer_details);
+
+        mDrawable = ContextCompat.getDrawable(this, R.drawable.birra);
+        mDrawable.setColorFilter(new PorterDuffColorFilter(0xfff000,PorterDuff.Mode.DARKEN));
 
         Intent myIntent = getIntent(); // gets the previously created intent
         final String beerId = myIntent.getStringExtra(KEY_UID);
@@ -174,6 +189,25 @@ public class BeerDetailsActivity extends AppCompatActivity {
                 addThisHBtoFavorites();
             }
         });
+
+        // Set Image color regarding SRM
+
+
+        //Get the image to be changed from the drawable, drawable-xhdpi, drawable-hdpi,etc folder.
+     /*   Drawable sourceDrawable = getResources().getDrawable(R.drawable.birrafondo);
+
+//Convert drawable in to bitmap
+        Bitmap sourceBitmap = Util.convertDrawableToBitmap(sourceDrawable);
+
+//Pass the bitmap and color code to change the icon color dynamically.
+
+        mFinalBitmap = Util.changeImageColor(sourceBitmap, 200);
+
+        imgIcon = (ImageView) findViewById(R.id.imageview_icon);
+
+        imgIcon.setImageBitmap(mFinalBitmap);*/
+
+
 
 
     }

@@ -74,6 +74,7 @@ public class MainActivity extends AppCompatActivity
     private boolean deleteMode;
     private MenuItem deleteIcon;
     private MenuItem favoritesIcon;
+    private MenuItem autoRenewIcon;
     private TabLayout tabLayout;
     private ViewPager viewPager;
 
@@ -104,6 +105,7 @@ public class MainActivity extends AppCompatActivity
     private View checkbox;
     private ActionBarDrawerToggle toggle;
     private FloatingActionButton addBeerFab;
+    private boolean favoritesList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -132,8 +134,12 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+               /* Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();*/
+                Intent intent = new Intent(MainActivity.this,AddBeerActivity.class);
+                startActivity(intent);
+                finish();
+
             }
         });
 
@@ -378,6 +384,7 @@ public class MainActivity extends AppCompatActivity
         getMenuInflater().inflate(R.menu.main, menu);
         favoritesIcon = menu.findItem(R.id.favorite_icon);
         deleteIcon = menu.findItem(R.id.delete_icon);
+        autoRenewIcon = menu.findItem(R.id.autorenew_icon);
         if(deleteMode){
             deleteIcon.setVisible(true);
             favoritesIcon.setVisible(false);
@@ -385,6 +392,7 @@ public class MainActivity extends AppCompatActivity
             deleteIcon.setVisible(false);
             favoritesIcon.setVisible(true);
         }
+        autoRenewIcon.setVisible(true);
         return true;
     }
 
@@ -405,7 +413,11 @@ public class MainActivity extends AppCompatActivity
                 deleteMySelectedBeers();
                 return true;
             case R.id.favorite_icon:
-                showMyFavoriteHomebrewerBeers();
+                this.favoritesList = true;
+                this.getBeerList();
+                return true;
+            case R.id.autorenew_icon:
+                this.getBeerList();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -414,10 +426,10 @@ public class MainActivity extends AppCompatActivity
 
     private void showMyFavoriteHomebrewerBeers() {
 
-        this.getBeerList();
         beerList = db.getMyFavoriteBeers();
         bAdapter.setBeerList(beerList);
         bAdapter.notifyDataSetChanged();
+        this.favoritesList = false;
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -491,7 +503,12 @@ public class MainActivity extends AppCompatActivity
                     JSONObject jObj = new JSONObject(response);
 
                     saveAllBeers(jObj);
-                    prepareBeerData();
+                    if(!favoritesList){
+                        prepareBeerData();
+                    }else{
+                        showMyFavoriteHomebrewerBeers();
+                    }
+
                 } catch (JSONException e) {
                     // JSON error
                     e.printStackTrace();

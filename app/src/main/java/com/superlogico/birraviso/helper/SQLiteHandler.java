@@ -94,6 +94,8 @@ public class SQLiteHandler extends SQLiteOpenHelper {
                 + " TEXT, "+ BEER_GEO_X + " TEXT, " + BEER_GEO_Y + " TEXT," + BEER_HB_ID + " TEXT" + " )";
         db.execSQL(CREATE_BEER_TABLE);
 
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_FAVORITE);
+
         String CREATE_FAVORITE_TABLE = "CREATE TABLE " + TABLE_FAVORITE + "("
                 + FAVORITE_ID + " INTEGER PRIMARY KEY," + FAVORITE_ID_HB + " TEXT"
                 + ")";
@@ -381,7 +383,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     public void deleteBeers() {
         SQLiteDatabase db = this.getWritableDatabase();
         // Delete All Rows
-        db.delete(TABLE_BEER, null, null);
+        int deletedRows = db.delete(TABLE_BEER,"1",null);
         db.close();
 
         Log.d(TAG, "Deleted all user info from sqlite");

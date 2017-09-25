@@ -494,7 +494,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     private boolean existsFavoriteHB(String hb_id) {
 
         ArrayList<Beer> beerList = new ArrayList<Beer>();
-        String selectQuery = "SELECT * FROM " + TABLE_FAVORITE + " WHERE id =" + hb_id;
+        String selectQuery = "SELECT * FROM " + TABLE_FAVORITE + " WHERE hb_id =" + hb_id;
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);

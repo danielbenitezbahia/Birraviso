@@ -78,6 +78,7 @@ public class MainActivity extends AppCompatActivity
     private ViewPager viewPager;
 
     private static final String KEY_UID = "uid";
+    private static final String BEER_ID = "id";
     private static final String BEER_NAME = "name";
     private static final String BEER_TRADEMARK = "trademark";
     private static final String BEER_STYLE = "style";
@@ -216,7 +217,7 @@ public class MainActivity extends AppCompatActivity
                 } else if(!homebrewerMode && !deleteMode){
                     Intent intent = new Intent(MainActivity.this,BeerDetailsActivity.class);
                     intent.putExtra(BEER_HB_ID, beer.getUser_id());
-                    intent.putExtra(KEY_UID, beer.getId());
+                    intent.putExtra(BEER_ID, beer.getId());
                     intent.putExtra(BEER_NAME, beer.getName());
                     intent.putExtra(BEER_TRADEMARK, beer.getTrademark());
                     intent.putExtra(BEER_STYLE, beer.getStyle());

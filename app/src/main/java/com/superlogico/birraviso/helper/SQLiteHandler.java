@@ -100,7 +100,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_FAVORITE);
 
         String CREATE_FAVORITE_TABLE = "CREATE TABLE " + TABLE_FAVORITE + "("
-                + FAVORITE_ID + " INTEGER PRIMARY KEY," + FAVORITE_ID_HB + " TEXT"
+                + FAVORITE_ID + " INTEGER PRIMARY KEY," + FAVORITE_ID_HB + " TEXT" + FAVORITE_NAME + " TEXT" + FAVORITE_TRADEMARK + " TEXT" + FAVORITE_STYLE + " TEXT"
                 + ")";
         db.execSQL(CREATE_FAVORITE_TABLE);
 
@@ -474,21 +474,22 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         Log.d(TAG, "Deleted all profile info from sqlite");
     }
 
-    public boolean addHBtoFavorites(String hb_id) {
+    public boolean addHBtoFavorites(String hb_id, String id) {
 
         if(!existsFavoriteHB(hb_id)) {
 
             SQLiteDatabase db = this.getWritableDatabase();
 
             ContentValues values = new ContentValues();
+            values.put(FAVORITE_ID, id);
             values.put(FAVORITE_ID_HB,hb_id);
 
 
             // Inserting Row
-            long id = db.insert(TABLE_FAVORITE,null,values);
+            long favoriteId = db.insert(TABLE_FAVORITE,null,values);
             db.close(); // Closing database connection
 
-            Log.d(TAG,"Homebrewer favorite inserted into sqlite: " + id);
+            Log.d(TAG,"Homebrewer favorite inserted into sqlite: " + favoriteId);
             return true;
         }
         return false;

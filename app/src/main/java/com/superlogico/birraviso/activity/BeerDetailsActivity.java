@@ -51,6 +51,7 @@ public class BeerDetailsActivity extends AppCompatActivity {
     private static final String BEER_GEO_X = "geo_x";
     private static final String BEER_GEO_Y = "geo_y";
     private static final String BEER_HB_ID = "hb_id";
+    private static final String BEER_ID = "id";
 
     private static final String KEY_UID = "uid";
 
@@ -100,6 +101,7 @@ public class BeerDetailsActivity extends AppCompatActivity {
     private Drawable mDrawable;
     private Bitmap mFinalBitmap;
     private ImageView imgIcon;
+    private String beer_id;
 
 
     @Override
@@ -124,6 +126,7 @@ public class BeerDetailsActivity extends AppCompatActivity {
         String beerSrm = myIntent.getStringExtra(BEER_SRM);
         String beerAlcohol = myIntent.getStringExtra(BEER_ALCOHOL);
         beer_hb_id = myIntent.getStringExtra(BEER_HB_ID);
+        beer_id = myIntent.getStringExtra(BEER_ID);
 
 
         tvBeerName = (TextView) findViewById(R.id.textview_title);
@@ -221,7 +224,7 @@ public class BeerDetailsActivity extends AppCompatActivity {
     }
 
     private void addThisHBtoFavorites() {
-        if (db.addHBtoFavorites(beer_hb_id)) {
+        if (db.addHBtoFavorites(beer_hb_id, beer_id)) {
             Toast.makeText(getApplicationContext(),
                     "El cervecero " + profileDetails.get(CONTACT_HB) + " fue agregado exitosamente a tu lista de favoritos!", Toast.LENGTH_LONG)
                     .show();

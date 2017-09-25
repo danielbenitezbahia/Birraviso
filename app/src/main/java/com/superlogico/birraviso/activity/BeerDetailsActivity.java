@@ -6,14 +6,12 @@ package com.superlogico.birraviso.activity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
-import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -21,7 +19,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -33,7 +30,6 @@ import com.superlogico.birraviso.app.AppConfig;
 import com.superlogico.birraviso.app.AppController;
 import com.superlogico.birraviso.helper.SQLiteHandler;
 import com.superlogico.birraviso.helper.SessionManager;
-import com.superlogico.birraviso.helper.Util.Util;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -111,8 +107,13 @@ public class BeerDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_beer_details);
 
-        mDrawable = ContextCompat.getDrawable(this, R.drawable.birra);
-        mDrawable.setColorFilter(new PorterDuffColorFilter(0xfff000,PorterDuff.Mode.DARKEN));
+     /*   mDrawable = ContextCompat.getDrawable(this, R.drawable.birra);
+        mDrawable.setColorFilter(new PorterDuffColorFilter(0xfff000,PorterDuff.Mode.DARKEN));*/
+
+        Resources res = this.getResources();
+        final ImageView image = (ImageView) findViewById(R.id.imageview_icon);
+        final int newColor = res.getColor(R.color.bg_login);
+        image.setColorFilter(newColor, PorterDuff.Mode.SRC_ATOP);
 
         Intent myIntent = getIntent(); // gets the previously created intent
         final String beerId = myIntent.getStringExtra(KEY_UID);

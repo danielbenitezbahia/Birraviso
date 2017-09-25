@@ -8,7 +8,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
@@ -175,11 +174,14 @@ public class MainActivity extends AppCompatActivity
 
         Intent myIntent = getIntent(); // gets the previously created intent
         String isHomebrewer = myIntent.getStringExtra("homebrewer");
+        String isFavoriteMode = myIntent.getStringExtra("favorites");
         if(TRUE_HB.equals(isHomebrewer)){
             homebrewerMode = true;
             this.getMyBeerList();
         }else{
-            this.getBeerList();
+            if(!TRUE_HB.equals(isFavoriteMode)){
+                this.getBeerList();
+            }
         }
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);

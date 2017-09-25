@@ -49,6 +49,9 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     // Favorites Table Columns names
     private static final String FAVORITE_ID = "id";
     private static final String FAVORITE_ID_HB = "hb_id";
+    private static final String FAVORITE_NAME = "name";
+    private static final String FAVORITE_TRADEMARK = "trademark";
+    private static final String FAVORITE_STYLE = "style";
 
     // Profile table name
     private static final String TABLE_PROFILE = "profile";

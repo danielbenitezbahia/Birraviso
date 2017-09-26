@@ -438,7 +438,12 @@ public class MainActivity extends AppCompatActivity
     private void showMyFavoriteHomebrewerBeers() {
 
         beerList = db.getMyFavoriteBeers();
-        bAdapter = new BeerAdapter(beerList);
+        if(null != bAdapter){
+            bAdapter.setBeerList(beerList);
+        }else{
+            bAdapter = new BeerAdapter(beerList);
+        }
+
         bAdapter.notifyDataSetChanged();
         DataHolder.getInstance().setFavoriteMode(true);
         this.favoritesList = false;

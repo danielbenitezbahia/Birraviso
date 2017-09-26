@@ -24,6 +24,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.superlogico.birraviso.DataHolder;
 import com.superlogico.birraviso.MainActivity;
 import com.superlogico.birraviso.R;
 import com.superlogico.birraviso.app.AppConfig;
@@ -129,7 +130,8 @@ public class BeerDetailsActivity extends AppCompatActivity {
         String beerAlcohol = myIntent.getStringExtra(BEER_ALCOHOL);
         beer_hb_id = myIntent.getStringExtra(BEER_HB_ID);
         beer_id = myIntent.getStringExtra(BEER_ID);
-        favoriteMode = myIntent.getBooleanExtra(FAVORITE_MODE, false);
+        DataHolder dataHolder = DataHolder.getInstance();
+        favoriteMode = dataHolder.isFavoritesMode();
 
 
         tvBeerName = (TextView) findViewById(R.id.textview_title);

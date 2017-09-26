@@ -52,6 +52,12 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     private static final String FAVORITE_NAME = "name";
     private static final String FAVORITE_TRADEMARK = "trademark";
     private static final String FAVORITE_STYLE = "style";
+    private static final String FAVORITE_IBU = "ibu";
+    private static final String FAVORITE_ALCOHOL = "alcohol";
+    private static final String FAVORITE_SMR = "srm";
+    private static final String FAVORITE_DESCRIPTION = "description";
+    private static final String FAVORITE_OTHERS = "others";
+    private static final String FAVORITE_CONTACT_INFO = "contact";
 
     // Profile table name
     private static final String TABLE_PROFILE = "profile";
@@ -100,7 +106,9 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_FAVORITE);
 
         String CREATE_FAVORITE_TABLE = "CREATE TABLE " + TABLE_FAVORITE + "("
-                + FAVORITE_ID + " INTEGER PRIMARY KEY," + FAVORITE_ID_HB + " TEXT" + FAVORITE_NAME + " TEXT" + FAVORITE_TRADEMARK + " TEXT" + FAVORITE_STYLE + " TEXT"
+                + FAVORITE_ID + " INTEGER PRIMARY KEY," + FAVORITE_ID_HB + " TEXT, " + FAVORITE_NAME + " TEXT, " + FAVORITE_TRADEMARK + " TEXT, " + FAVORITE_STYLE + " TEXT, "
+                + FAVORITE_IBU + " TEXT, " + FAVORITE_ALCOHOL + " TEXT, "+ FAVORITE_SMR + " TEXT, "
+                + FAVORITE_DESCRIPTION + " TEXT ,"+ FAVORITE_OTHERS + " TEXT," + FAVORITE_CONTACT_INFO + " TEXT "
                 + ")";
         db.execSQL(CREATE_FAVORITE_TABLE);
 
@@ -301,7 +309,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         cursor.close();
         db.close();
         // return user
-        Log.d(TAG, "Fetching beer from Sqlite: " + beerList.toString());
+        Log.d(TAG, "Fetching beers from Sqlite: " + beerList.toString());
 
         return beerList;
     }
@@ -333,7 +341,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         cursor.close();
         db.close();
         // return user
-        Log.d(TAG, "Fetching beer from Sqlite: " + beerList.toString());
+        Log.d(TAG, "Fetching my beers from Sqlite: " + beerList.toString());
 
         return beerList;
     }
@@ -345,10 +353,11 @@ public class SQLiteHandler extends SQLiteOpenHelper {
 
         ArrayList<Beer> beerList = new ArrayList<Beer>();
         String selectQuery = "SELECT * FROM " + TABLE_FAVORITE;
+        Beer beer;
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
-        if(cursor.getCount() != 0) {
+        if(cursor.getCount() > 0) {
             // Move to first row
             cursor.moveToFirst();
             // Cursor parameter Order
@@ -357,10 +366,12 @@ public class SQLiteHandler extends SQLiteOpenHelper {
             // Beer parameter order
             // String beer_id, String user_id, String name, String style, String trademark, String ibu,
             // String drb, String alcohol, String description, String contact, String others
-            Beer beer;
+
            // HashMap<String, String> userDetails = getUserDetails();
            // String unique_id = userDetails.get(KEY_UID);
-            beer = new Beer(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), null, null, null, null, null, null);
+            // Beer(String id, String user_id, String name, String style, String trademark, String ibu, String drb, String alcohol, String description, String contact, String others)
+
+            beer = new Beer(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(4), cursor.getString(3), cursor.getString(5), cursor.getString(7), cursor.getString(6),cursor.getString(8), cursor.getString(9), cursor.getString(10));
 
             beerList.add(beer);
             while (cursor.moveToNext()) {
@@ -494,19 +505,49 @@ public class SQLiteHandler extends SQLiteOpenHelper {
 
         if(!existsFavoriteHB(hb_id)) {
 
-            SQLiteDatabase db = this.getWritableDatabase();
-            beer = this.getBeer(id);
-            ContentValues values = new ContentValues();
-            values.put(FAVORITE_ID, id);
-            values.put(FAVORITE_ID_HB,hb_id);
-            values.put(FAVORITE_NAME, beer.getName());
-            values.put(FAVORITE_TRADEMARK, beer.getTrademark());
-            values.put(FAVORITE_STYLE, beer.getStyle());
-            // Inserting Row
-            long favoriteId = db.insert(TABLE_FAVORITE,null,values);
-            db.close(); // Closing database connection
+            ArrayList<Beer> beerList = new ArrayList<Beer>();
+            String selectQuery = "SELECT * FROM " + TABLE_BEER + " WHERE beer.hb_id = " + hb_id;
 
-            Log.d(TAG,"Homebrewer favorite inserted into sqlite: " + favoriteId);
+            SQLiteDatabase db = this.getWritableDatabase();
+            Cursor cursor = db.rawQuery(selectQuery, null);
+            if(cursor.getCount() > 0) {
+                // Move to first row
+                cursor.moveToFirst();
+                ContentValues values = new ContentValues();
+                values.put(FAVORITE_ID, cursor.getString(0));
+                values.put(FAVORITE_ID_HB, hb_id);
+                values.put(FAVORITE_NAME, cursor.getString(1));
+                values.put(FAVORITE_TRADEMARK, cursor.getString(2));
+                values.put(FAVORITE_STYLE, cursor.getString(3));
+                values.put(FAVORITE_IBU, cursor.getString(4));
+                values.put(FAVORITE_ALCOHOL, cursor.getString(5));
+                values.put(FAVORITE_SMR, cursor.getString(6));
+                values.put(FAVORITE_DESCRIPTION, cursor.getString(7));
+                values.put(FAVORITE_OTHERS, cursor.getString(8));
+                values.put(FAVORITE_CONTACT_INFO, cursor.getString(9));
+                // Inserting Row
+                long favoriteId = db.insert(TABLE_FAVORITE,null,values);
+
+                while (cursor.moveToNext()) {
+
+                    values = new ContentValues();
+                    values.put(FAVORITE_ID, cursor.getString(0));
+                    values.put(FAVORITE_ID_HB, hb_id);
+                    values.put(FAVORITE_NAME, cursor.getString(1));
+                    values.put(FAVORITE_TRADEMARK, cursor.getString(2));
+                    values.put(FAVORITE_STYLE, cursor.getString(3));
+                    values.put(FAVORITE_IBU, cursor.getString(4));
+                    values.put(FAVORITE_ALCOHOL, cursor.getString(5));
+                    values.put(FAVORITE_SMR, cursor.getString(6));
+                    values.put(FAVORITE_DESCRIPTION, cursor.getString(7));
+                    values.put(FAVORITE_OTHERS, cursor.getString(8));
+                    values.put(FAVORITE_CONTACT_INFO, cursor.getString(9));
+                    // Inserting Row
+                    favoriteId = db.insert(TABLE_FAVORITE,null,values);
+                }
+            }
+            cursor.close();
+            db.close();
             return true;
         }
         return false;

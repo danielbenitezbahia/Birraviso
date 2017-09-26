@@ -177,17 +177,16 @@ public class MainActivity extends AppCompatActivity
 
         Intent myIntent = getIntent(); // gets the previously created intent
         String isHomebrewer = myIntent.getStringExtra("homebrewer");
-        String isFavoriteMode = myIntent.getStringExtra("favorites");
+        DataHolder dataHolder = DataHolder.getInstance();
+        favoriteMode = dataHolder.isFavoritesMode();
         if(TRUE_HB.equals(isHomebrewer)){
             favoriteMode = false;
             homebrewerMode = true;
             this.getMyBeerList();
         }else{
-            if(!TRUE_HB.equals(isFavoriteMode)){
-                favoriteMode = false;
+            if(!favoriteMode){
                 this.getBeerList();
             }else{
-                favoriteMode = true;
                 this.showMyFavoriteHomebrewerBeers();
             }
         }
@@ -233,7 +232,6 @@ public class MainActivity extends AppCompatActivity
                     intent.putExtra(BEER_ALCOHOL, beer.getAlcohol());
                     intent.putExtra(BEER_SRM, beer.getDrb());
                     intent.putExtra(BEER_DESCRIPTION, beer.getDescription());
-                    intent.putExtra(FAVORITE_MODE, favoriteMode);
 
                     startActivity(intent);
                     finish();
@@ -440,9 +438,9 @@ public class MainActivity extends AppCompatActivity
     private void showMyFavoriteHomebrewerBeers() {
 
         beerList = db.getMyFavoriteBeers();
-        bAdapter.setBeerList(beerList);
+        bAdapter = new BeerAdapter(beerList);
         bAdapter.notifyDataSetChanged();
-        favoriteMode = true;
+        DataHolder.getInstance().setFavoriteMode(true);
         this.favoritesList = false;
     }
 
@@ -464,12 +462,12 @@ public class MainActivity extends AppCompatActivity
            //Intent intent = new Intent(MainActivity.this,MyBeerList.class);
            // startActivity(intent);
            // finish();
-            favoriteMode = false;
+            DataHolder.getInstance().setFavoriteMode(false);
             this.getMyBeerList();
             addBeerFab.setVisibility(View.VISIBLE);
 
-
         } else if (id == R.id.nav_manage) {
+            DataHolder.getInstance().setFavoriteMode(false);
             this.homebrewerMode = false;
             this.getBeerList();
 

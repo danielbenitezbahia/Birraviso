@@ -629,6 +629,8 @@ public class MainActivity extends AppCompatActivity
                 String geo_y = beer.getString("geo_y");
                 String hb_id = beer.getString("hb_id");
 
+                /* String idbackend, String name, String trademark, String style, String ibu, String alcohol, String srm, String description, String others, String contact, String geo_x, String geo_y, String hb_id)*/
+
                 db.addBeer(id, name, trademark, style, ibu, alcohol, srm, description, others, contact, geo_x, geo_y, hb_id);
 
             } catch (JSONException e) {

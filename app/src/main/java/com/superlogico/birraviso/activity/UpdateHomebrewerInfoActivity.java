@@ -4,7 +4,6 @@ package com.superlogico.birraviso.activity;
  * Created by Daniel on 7/3/2017.
  */
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,31 +11,25 @@ import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
-import com.google.android.gms.location.places.Place;
-import com.google.android.gms.common.api.Status;
-import com.google.android.gms.maps.CameraUpdate;
-
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.google.android.gms.maps.OnMapReadyCallback;
 import com.superlogico.birraviso.MainActivity;
 import com.superlogico.birraviso.R;
 import com.superlogico.birraviso.app.AppConfig;
@@ -346,11 +339,8 @@ public class UpdateHomebrewerInfoActivity extends FragmentActivity
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Add a marker in Sydney and move the camera
+        // Add a marker in hombrewer address and move the camera
         LatLng birreria = new LatLng(Double.parseDouble(latitud), Double.parseDouble(longitud));
-       // mMap.addMarker(new MarkerOptions().position(birreria).title(contact));
-     //   mMap.moveCamera(CameraUpdateFactory.newLatLng(birreria));
-
         mMap.addMarker(new MarkerOptions().position(birreria).title("Ésta es tu birrería"));
         CameraUpdate center=
                 CameraUpdateFactory.newLatLngZoom(birreria, 15.0f);

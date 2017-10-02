@@ -772,6 +772,10 @@ public class MainActivity extends AppCompatActivity
                         String latitud = (String) profile.get("geo_x");
                         String longitud = (String) profile.get("geo_y");
                         saveMyProfile(id, contacto, whatsapp, email, facebook, latitud, longitud);
+                        if(DataHolder.getInstance().isEditProfile()){
+                            completeEditMyProfile();
+                        }
+                        DataHolder.getInstance().setEditProfile(false);
                       //  editMyProfile(contacto, whatsapp, email, facebook, latitud, longitud);
                     }
                 } catch (JSONException e) {
@@ -812,11 +816,17 @@ public class MainActivity extends AppCompatActivity
 
     private void editMyProfile() {
 
+        this.getMyProfileData();
+        DataHolder.getInstance().setEditProfile(true);
+
+    }
+
+    private void completeEditMyProfile(){
         HashMap<String, String> myProfileDetails = db.getMyProfileDetails();
         Intent intent = new Intent(MainActivity.this,UpdateHomebrewerInfoActivity.class);
         intent.putExtra(CONTACT, myProfileDetails.get("contact"));
         intent.putExtra(WHATSAPP, myProfileDetails.get("whatsapp"));
-        intent.putExtra(EMAIL, myProfileDetails.get("email"));
+        intent.putExtra(EMAIL, myProfileDetails.get("publicEmail"));
         intent.putExtra(FACEBOOK, myProfileDetails.get("facebook"));
         intent.putExtra(LATITUD, myProfileDetails.get("geo_x"));
         intent.putExtra(LONGITUD, myProfileDetails.get("geo_y"));

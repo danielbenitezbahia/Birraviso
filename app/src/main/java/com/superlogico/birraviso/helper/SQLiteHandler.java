@@ -165,7 +165,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
 
         // Inserting Row
         long id = db.insert(TABLE_USER, null, values);
-        db.close(); // Closing database connection
+       // db.close(); // Closing database connection
 
         Log.d(TAG, "New user inserted into sqlite: " + id);
     }
@@ -190,7 +190,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
             }
         }
         cursor.close();
-        db.close();
+       // db.close();
         // return user
         Log.d(TAG, "Fetching user from Sqlite: " + user.toString());
 
@@ -204,7 +204,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         // Delete All Rows
         db.delete(TABLE_USER, null, null);
-        db.close();
+       // db.close();
 
         Log.d(TAG, "Deleted all user info from sqlite");
     }
@@ -236,7 +236,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
 
         // Inserting Row
         long id = db.insert(TABLE_BEER, null, values);
-        db.close(); // Closing database connection
+       // db.close(); // Closing database connection
 
         Log.d(TAG, "New beer inserted into sqlite: " + id);
     }
@@ -267,7 +267,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
 
         // Inserting Row
         long id = db.insert(TABLE_BEER, null, values);
-        db.close(); // Closing database connection
+       // db.close(); // Closing database connection
 
         Log.d(TAG, "New my beer inserted into sqlite: " + id);
     }
@@ -307,7 +307,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
             }
         }
         cursor.close();
-        db.close();
+       // db.close();
         // return user
         Log.d(TAG, "Fetching beers from Sqlite: " + beerList.toString());
 
@@ -339,7 +339,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
             }
         }
         cursor.close();
-        db.close();
+       // db.close();
         // return user
         Log.d(TAG, "Fetching my beers from Sqlite: " + beerList.toString());
 
@@ -380,7 +380,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
             }
         }
         cursor.close();
-        db.close();
+        //db.close();
         // return user
         Log.d(TAG, "Fetching beer from Sqlite: " + beerList.toString());
 
@@ -394,7 +394,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         // Delete All Rows
         int deletedRows = db.delete(TABLE_BEER,"1",null);
-        db.close();
+        //db.close();
 
         Log.d(TAG, "Deleted all user info from sqlite");
     }
@@ -404,7 +404,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         // Delete All Rows
         //db.delete
         db.delete(TABLE_BEER, "id=?", new String[]{id});
-        db.close();
+        //db.close();
     }
 
     public boolean existsBeer(String id) {
@@ -455,7 +455,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
 
         // Inserting Row
         long id = db.insert(TABLE_PROFILE, null, values);
-        db.close(); // Closing database connection
+        //db.close(); // Closing database connection
 
         Log.d(TAG, "Homebrewer profile inserted into sqlite: " + id);
     }
@@ -483,7 +483,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
             }
         }
         cursor.close();
-        db.close();
+        //db.close();
         // return profile
         Log.d(TAG, "Fetching user from Sqlite: " + profile.toString());
 
@@ -494,7 +494,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         // Delete All Rows
         db.delete(TABLE_PROFILE, null, null);
-        db.close();
+      //  db.close();
 
         Log.d(TAG, "Deleted all profile info from sqlite");
     }
@@ -547,7 +547,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
                 }
             }
             cursor.close();
-            db.close();
+           // db.close();
             return true;
         }
         return false;
@@ -567,27 +567,11 @@ public class SQLiteHandler extends SQLiteOpenHelper {
 
     public HashMap<String,String> getMyProfileDetails() {
 
-        String myEmail = "";
-        HashMap<String, String> user  = new HashMap<String, String>();
-        String selectQuery = "SELECT email FROM " + TABLE_USER;
+        HashMap<String, String> profile = new HashMap<>();
+        String selectQuery = "SELECT * FROM " + TABLE_PROFILE + " WHERE hb_id = 1000000";
         SQLiteDatabase db = this.getReadableDatabase();
+
         Cursor cursor = db.rawQuery(selectQuery, null);
-        if(cursor.getCount() != 0) {
-            // Move to first row
-            cursor.moveToFirst();
-            if (cursor.getCount() > 0) {
-                myEmail = cursor.getString(0);
-            }
-        }
-        cursor.close();
-
-        // Get profile filtering by email
-
-        HashMap<String, String> profile = new HashMap<String, String>();
-        selectQuery = "SELECT * FROM " + TABLE_PROFILE + " WHERE email = '" +myEmail + "'";
-
-
-         cursor = db.rawQuery(selectQuery, null);
         if(cursor.getCount() != 0) {
             // Move to first row
             cursor.moveToFirst();
@@ -602,7 +586,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
             }
         }
         cursor.close();
-        db.close();
+        //db.close();
         // return profile
         Log.d(TAG, "Fetching user from Sqlite: " + profile.toString());
 

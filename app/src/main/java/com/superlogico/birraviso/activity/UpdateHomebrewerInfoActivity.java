@@ -119,8 +119,17 @@ public class UpdateHomebrewerInfoActivity extends FragmentActivity
         email = myIntent.getStringExtra(PROFILE_CONTACT_EMAIL);
         whatsapp = myIntent.getStringExtra(PROFILE_CONTACT_WHATSAPP);
         facebook = myIntent.getStringExtra(PROFILE_CONTACT_FACEBOOK);
-        latitud = myIntent.getStringExtra(LATITUD).isEmpty()?"0":myIntent.getStringExtra(LATITUD);
-        longitud = myIntent.getStringExtra(LONGITUD).isEmpty()?"0":myIntent.getStringExtra(LONGITUD);
+        if( myIntent.getStringExtra(LATITUD) != null && !myIntent.getStringExtra(LATITUD).isEmpty() ){
+            latitud = myIntent.getStringExtra(LATITUD);
+        }else {
+            latitud = "0";
+        }
+
+        if( myIntent.getStringExtra(LONGITUD) != null && !myIntent.getStringExtra(LONGITUD).isEmpty() ){
+            longitud = myIntent.getStringExtra(LONGITUD);
+        }else {
+            longitud = "0";
+        }
 
 
         inputDescrpitionLayout = (TextInputLayout) findViewById(R.id.contact_layout);

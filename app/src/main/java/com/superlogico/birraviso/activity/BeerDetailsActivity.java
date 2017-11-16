@@ -133,6 +133,7 @@ public class BeerDetailsActivity extends AppCompatActivity {
         beer_id = myIntent.getStringExtra(BEER_ID);
         DataHolder dataHolder = DataHolder.getInstance();
         favoriteMode = dataHolder.isFavoritesMode();
+        dataHolder.setSyncAllBeerNeeded(true);
 
         Resources res = this.getResources();
         final ImageView image = (ImageView) findViewById(R.id.imageview_icon);

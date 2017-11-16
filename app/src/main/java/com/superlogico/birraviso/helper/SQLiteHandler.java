@@ -12,6 +12,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import com.superlogico.birraviso.model.Beer;
+import com.superlogico.birraviso.model.HomeBrewer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -344,6 +345,38 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         Log.d(TAG, "Fetching my beers from Sqlite: " + beerList.toString());
 
         return beerList;
+    }
+
+    public ArrayList<HomeBrewer> getAllHomebrewers(){
+
+        ArrayList<HomeBrewer> homebrewerList = new ArrayList<HomeBrewer>();
+        HomeBrewer homeBrewer;
+        String selectQuery = "SELECT * FROM " + TABLE_PROFILE;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        if(cursor.getCount() != 0) {
+            // Move to first row
+            cursor.moveToFirst();
+
+            homeBrewer = new HomeBrewer(cursor.getString(0),cursor.getString(1),cursor.getString(2),cursor.getString(3),
+                    cursor.getString(4),cursor.getString(6), cursor.getString(8), cursor.getString(5));
+
+            homebrewerList.add(homeBrewer);
+            while (cursor.moveToNext()) {
+
+                homeBrewer = new HomeBrewer(cursor.getString(0),cursor.getString(1),cursor.getString(2),cursor.getString(3),
+                        cursor.getString(4),cursor.getString(5), cursor.getString(6), cursor.getString(7));
+
+                homebrewerList.add(homeBrewer);
+            }
+        }
+        cursor.close();
+        // db.close();
+        // return user
+        Log.d(TAG, "Fetching all profiles data from Sqlite: " + homebrewerList.toString());
+
+        return homebrewerList;
     }
 
     /**

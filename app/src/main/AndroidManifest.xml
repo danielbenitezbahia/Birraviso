@@ -9,6 +9,10 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
+    <permission
+        android:name="com.superlogico.birraviso.permission.MAPS_RECEIVE"
+        android:protectionLevel="signature" />
+
     <application
         android:name="com.superlogico.birraviso.app.AppController"
         android:allowBackup="true"

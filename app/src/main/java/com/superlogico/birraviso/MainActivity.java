@@ -1,6 +1,7 @@
 package com.superlogico.birraviso;
 
 import android.app.AlertDialog;
+import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -33,6 +34,13 @@ import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.appindexing.Thing;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.superlogico.birraviso.activity.AddBeerActivity;
 import com.superlogico.birraviso.activity.BeerDetailsActivity;
 import com.superlogico.birraviso.activity.LoginActivity;
@@ -47,6 +55,7 @@ import com.superlogico.birraviso.app.AppController;
 import com.superlogico.birraviso.helper.SQLiteHandler;
 import com.superlogico.birraviso.helper.SessionManager;
 import com.superlogico.birraviso.model.Beer;
+import com.superlogico.birraviso.model.HomeBrewer;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -58,7 +67,7 @@ import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
 
 
     private static final String TAG = RegisterActivity.class.getSimpleName();
@@ -108,6 +117,9 @@ public class MainActivity extends AppCompatActivity
     private FloatingActionButton addBeerFab;
     private boolean favoritesList;
     private boolean favoriteMode;
+    private GoogleMap mMap;
+    private MapFragment mMapFragment;
+    private FragmentTransaction fragmentTransaction;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,6 +127,8 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+       // createHomebrewerMap();
 
        /* viewPager = (ViewPager) findViewById(R.id.viewpager);
         setupViewPager(viewPager);
@@ -185,7 +199,13 @@ public class MainActivity extends AppCompatActivity
             this.getMyBeerList();
         }else{
             if(!favoriteMode){
-                this.getBeerList();
+                if(dataHolder.isSyncAllBeerNeeded()){
+                    dataHolder.setSyncAllBeerNeeded(false);
+                    this.prepareBeerData();
+                }else{
+                    this.getBeerList();
+                }
+
             }else{
                 this.showMyFavoriteHomebrewerBeers();
             }
@@ -257,6 +277,17 @@ public class MainActivity extends AppCompatActivity
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
+    private void createHomebrewerMap() {
+
+        mMapFragment = MapFragment.newInstance();
+        mMapFragment.getMapAsync(this);
+        fragmentTransaction =
+                getFragmentManager().beginTransaction();
+        fragmentTransaction.add(R.id.content_main, mMapFragment);
+        fragmentTransaction.commit();
+
+    }
+
    /*private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new BeerList(), "ONE");
@@ -313,7 +344,11 @@ public class MainActivity extends AppCompatActivity
 
     private void prepareBeerData(){
         beerList = db.getAllBeers();
-        bAdapter.setBeerList(beerList);
+        if(null != bAdapter){
+            bAdapter.setBeerList(beerList);
+        }else{
+            bAdapter = new BeerAdapter(beerList);
+        }
         bAdapter.notifyDataSetChanged();
     }
 
@@ -477,6 +512,19 @@ public class MainActivity extends AppCompatActivity
             this.getBeerList();
 
         } else if (id == R.id.nav_share) {
+            if(DataHolder.getInstance().isHomebrewerMapTurnedOn()){
+                fragmentTransaction =
+                        getFragmentManager().beginTransaction();
+                fragmentTransaction.remove(mMapFragment);
+                fragmentTransaction.commit();
+                DataHolder.getInstance().setHomebrewerMapTurnedOn(false);
+
+            }else{
+                DataHolder.getInstance().setHomebrewerMapTurnedOn(true);
+                createHomebrewerMap();
+            }
+
+
 
         } else if (id == R.id.nav_logout) {
             logoutUser();
@@ -931,6 +979,34 @@ public class MainActivity extends AppCompatActivity
                 .setObject(object)
                 .setActionStatus(Action.STATUS_TYPE_COMPLETED)
                 .build();
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+
+        // Add a marker in hombrewer address and move the camera
+
+        String latitud = "40", longitud = "-74";
+        LatLng birreria = null;
+
+        ArrayList<HomeBrewer> hbList = db.getAllHomebrewers();
+        for(HomeBrewer hb : hbList){
+
+            if(null != hb.getGeo_x() && !hb.getGeo_x().isEmpty()) {
+
+                birreria = new LatLng(Double.parseDouble(hb.getGeo_x()),Double.parseDouble(hb.getGeo_y()));
+                mMap.addMarker(new MarkerOptions().position(birreria).title(hb.getContact()));
+            }
+        }
+
+        CameraUpdate center=
+                CameraUpdateFactory.newLatLngZoom(birreria, 15.0f);
+        // CameraUpdate zoom=CameraUpdateFactory.zoomTo(15);
+
+        mMap.moveCamera(center);
+
+
     }
 
     @Override

@@ -10,6 +10,7 @@ public class DataHolder {
     private boolean editProfile;
     private boolean syncAllBeerNeeded;
     private boolean homebrewerMapTurnedOn;
+    private boolean showHBBeers;
 
     public static DataHolder getInstance() {
         return ourInstance;
@@ -48,5 +49,13 @@ public class DataHolder {
 
     public void setHomebrewerMapTurnedOn(boolean homebrewerMapTurnedOn) {
         this.homebrewerMapTurnedOn = homebrewerMapTurnedOn;
+    }
+
+    public void setShowHBBeers(boolean showHBBeers) {
+        this.showHBBeers = showHBBeers;
+    }
+    
+    public boolean isShowHBBeers() {
+        return showHBBeers;
     }
 }

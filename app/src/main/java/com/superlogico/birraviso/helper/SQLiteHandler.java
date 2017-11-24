@@ -318,6 +318,48 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     /**
      * Getting beers data from database
      * */
+    public ArrayList<Beer> getAllHBBeers(String hb_id) {
+
+        ArrayList<Beer> beerList = new ArrayList<Beer>();
+        String selectQuery = "SELECT * FROM " + TABLE_BEER + " WHERE HB_ID = " + hb_id;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        if(cursor.getCount() != 0) {
+            // Move to first row
+            cursor.moveToFirst();
+            // Cursor parameter Order
+            // id, name, trademark, style, ibu, alcohol, srm, description, others, contact , x, y
+            //
+            // Beer parameter order
+            // String beer_id, String user_id, String name, String style, String trademark, String ibu,
+            // String drb, String alcohol, String description, String contact, String others
+            Beer beer;
+            HashMap<String, String> userDetails = getUserDetails();
+            //String unique_id = userDetails.get(KEY_UID);
+            beer = new Beer(cursor.getString(0), cursor.getString(12), cursor.getString(1), cursor.getString(3), cursor.getString(2),
+                    cursor.getString(4), cursor.getString(6), cursor.getString(5), cursor.getString(7), cursor.getString(9),
+                    cursor.getString(8));
+            beerList.add(beer);
+            while (cursor.moveToNext()) {
+
+                beer = new Beer(cursor.getString(0), cursor.getString(12), cursor.getString(1), cursor.getString(3), cursor.getString(2),
+                        cursor.getString(4), cursor.getString(6), cursor.getString(5), cursor.getString(7), cursor.getString(9),
+                        cursor.getString(8));
+                beerList.add(beer);
+            }
+        }
+        cursor.close();
+        // db.close();
+        // return user
+        Log.d(TAG, "Fetching beers from Sqlite: " + beerList.toString());
+
+        return beerList;
+    }
+
+    /**
+     * Getting beers data from database
+     * */
     public ArrayList<Beer> getAllMyBeers(String uid) {
 
         ArrayList<Beer> beerList = new ArrayList<Beer>();

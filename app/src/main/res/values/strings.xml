@@ -28,4 +28,5 @@
     <string name="description">Descripcion</string>
     <string name="others">Detalles Adicionales</string>
     <string name="contact">Contacto</string>
+    <string name="hbBeerList">CLICK ACÁ PARA VER SU LISTADO DE CERVEZAS</string>
 </resources>

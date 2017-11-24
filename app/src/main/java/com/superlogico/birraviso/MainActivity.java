@@ -1,15 +1,20 @@
 package com.superlogico.birraviso;
 
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -40,6 +45,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.superlogico.birraviso.activity.AddBeerActivity;
 import com.superlogico.birraviso.activity.BeerDetailsActivity;
@@ -54,6 +60,8 @@ import com.superlogico.birraviso.app.AppConfig;
 import com.superlogico.birraviso.app.AppController;
 import com.superlogico.birraviso.helper.SQLiteHandler;
 import com.superlogico.birraviso.helper.SessionManager;
+import com.superlogico.birraviso.helper.Util.Util;
+import com.superlogico.birraviso.helper.Util.Utils;
 import com.superlogico.birraviso.model.Beer;
 import com.superlogico.birraviso.model.HomeBrewer;
 
@@ -73,6 +81,7 @@ public class MainActivity extends AppCompatActivity
     private static final String TAG = RegisterActivity.class.getSimpleName();
     private static final String ID_BEERS_TO_DELETE = "id_beers_to_delete";
     private static final String FAVORITE_MODE = "favorite_mode";
+    private static final int PERMISSION_REQUEST_CONTACT = 1;
     private SQLiteHandler db;
     private SessionManager session;
     private ProgressDialog pDialog;
@@ -107,6 +116,8 @@ public class MainActivity extends AppCompatActivity
     private static final String EMAIL = "email";
     private static final String LATITUD = "latitud";
     private static final String LONGITUD = "longitud";
+
+
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -120,6 +131,10 @@ public class MainActivity extends AppCompatActivity
     private GoogleMap mMap;
     private MapFragment mMapFragment;
     private FragmentTransaction fragmentTransaction;
+    private Utils util;
+    private String firstName, secondName, phoneNumber, email;
+    private HashMap markerHb;
+    private String selected_hb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,6 +142,10 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        util = Utils.getInstance();
+        util.setAppContext(getApplicationContext());
+       // this.askForContactPermission();
+
 
        // createHomebrewerMap();
 
@@ -484,6 +503,20 @@ public class MainActivity extends AppCompatActivity
         this.favoritesList = false;
     }
 
+    private void showHomebrewerBeers(String hb_id) {
+
+        beerList = db.getAllHBBeers(hb_id);
+        if(null != bAdapter){
+            bAdapter.setBeerList(beerList);
+        }else{
+            bAdapter = new BeerAdapter(beerList);
+        }
+
+        bAdapter.notifyDataSetChanged();
+       // DataHolder.getInstance().setFavoriteMode(true);
+        //this.favoritesList = false;
+    }
+
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -513,11 +546,7 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_share) {
             if(DataHolder.getInstance().isHomebrewerMapTurnedOn()){
-                fragmentTransaction =
-                        getFragmentManager().beginTransaction();
-                fragmentTransaction.remove(mMapFragment);
-                fragmentTransaction.commit();
-                DataHolder.getInstance().setHomebrewerMapTurnedOn(false);
+                this.closeMap();
 
             }else{
                 DataHolder.getInstance().setHomebrewerMapTurnedOn(true);
@@ -984,21 +1013,53 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        Marker marker;
+        markerHb = new HashMap();
 
         // Add a marker in hombrewer address and move the camera
 
         String latitud = "40", longitud = "-74";
         LatLng birreria = null;
+        int clickCounter = 0;
 
         ArrayList<HomeBrewer> hbList = db.getAllHomebrewers();
         for(HomeBrewer hb : hbList){
 
             if(null != hb.getGeo_x() && !hb.getGeo_x().isEmpty()) {
 
+
                 birreria = new LatLng(Double.parseDouble(hb.getGeo_x()),Double.parseDouble(hb.getGeo_y()));
-                mMap.addMarker(new MarkerOptions().position(birreria).title(hb.getContact()));
+                marker = mMap.addMarker(new MarkerOptions().position(birreria).title(hb.getContact()).snippet(getString(R.string.hbBeerList)));
+                marker.setTag(hb.getHb_id());
+                markerHb.put(marker.getId(), hb.getHb_id());
+
             }
         }
+
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+
+                Toast.makeText(getApplicationContext(),"Debería esta mostrandose el listado de cervezas de este birrero...", Toast.LENGTH_SHORT);
+                /*if (marker.equals(userMarker)) {  //if clicked marker equals marker created by user
+                    Intent intent = new Intent(MapsActivity.this, ObjectViewActivity.class);
+                    startActivity(intent);
+
+                }   */    //Otherwise just show the info window
+                return false;
+            }
+        });
+
+        mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+                DataHolder.getInstance().setShowHBBeers(true);
+                selected_hb = (String) markerHb.get(marker.getId());
+                showHomebrewerBeers(selected_hb);
+                closeMap();
+            }
+        });
 
         CameraUpdate center=
                 CameraUpdateFactory.newLatLngZoom(birreria, 15.0f);
@@ -1008,6 +1069,96 @@ public class MainActivity extends AppCompatActivity
 
 
     }
+
+    private void closeMap(){
+        fragmentTransaction =
+                getFragmentManager().beginTransaction();
+        fragmentTransaction.remove(mMapFragment);
+        fragmentTransaction.commit();
+        DataHolder.getInstance().setHomebrewerMapTurnedOn(false);
+        DataHolder.getInstance().setShowHBBeers(false);
+    }
+
+    public void askForContactPermission(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(getApplicationContext(),Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+                // Should we show an explanation?
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                        Manifest.permission.READ_CONTACTS)) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                    builder.setTitle("Contacts access needed");
+                    builder.setPositiveButton(android.R.string.ok, null);
+                    builder.setMessage("please confirm Contacts access");//TODO put real question
+                    builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                        @TargetApi(Build.VERSION_CODES.M)
+                        @Override
+                        public void onDismiss(DialogInterface dialog) {
+                            requestPermissions(
+                                    new String[]
+                                            {Manifest.permission.READ_CONTACTS}
+                                    , PERMISSION_REQUEST_CONTACT);
+                        }
+                    });
+                    builder.show();
+                    // Show an expanation to the user *asynchronously* -- don't block
+                    // this thread waiting for the user's response! After the user
+                    // sees the explanation, try again to request the permission.
+
+                } else {
+                   // No explanation needed, we can request the permission.
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{"android.permission.WRITE_CONTACTS"},
+                            PERMISSION_REQUEST_CONTACT);
+
+                    // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                    // app-defined int constant. The callback method gets the
+                    // result of the request.
+                }
+            }else{
+                addContact();
+            }
+        }
+        else{
+            addContact();
+        }
+    }
+
+    private void addContact() {
+        util.setFirstName(firstName);
+        util.setEmail(email);
+        util.setSecondName(secondName);
+        util.setPhone(phoneNumber);
+        util.addContact();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+
+        switch (requestCode) {
+            case PERMISSION_REQUEST_CONTACT: {
+
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    this.addContact();
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+
+                } else {
+                    Toast.makeText(getApplicationContext(),"No permission for contacts", Toast.LENGTH_SHORT);
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request
+        }
+    }
+
 
     @Override
     public void onStart() {

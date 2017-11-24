@@ -4,6 +4,8 @@ package com.superlogico.birraviso.helper.Util;
  * Created by Daniel on 24/9/2017.
  */
 
+import android.content.ContentProviderOperation;
+import android.content.ContentProviderResult;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -12,8 +14,16 @@ import android.graphics.LightingColorFilter;
 import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.provider.ContactsContract;
+import android.provider.ContactsContract.Data;
 
-public class Util {
+import java.util.ArrayList;
+
+public final class Util {
+
+    private Util(){
+
+    }
 
     public static Bitmap changeImageColor(Bitmap sourceBitmap, int color) {
         Bitmap resultBitmap = Bitmap.createBitmap(sourceBitmap, 0, 0,
@@ -45,5 +55,6 @@ public class Util {
 
         return bitmap;
     }
+
 
 }

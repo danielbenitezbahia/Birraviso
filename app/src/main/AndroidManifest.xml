@@ -3,14 +3,22 @@
     package="com.superlogico.birraviso">
 
     <uses-sdk
-        android:minSdkVersion="9"
-        android:targetSdkVersion="21" />
+        android:minSdkVersion="11"
+        android:targetSdkVersion="23" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.READ_CONTACTS"  ></uses-permission>
+    <uses-permission android:name="android.permission.WRITE_CONTACTS"  ></uses-permission>
 
     <permission
         android:name="com.superlogico.birraviso.permission.MAPS_RECEIVE"
+        android:protectionLevel="signature" />
+    <permission
+        android:name="com.superlogico.birraviso.permission.READ_CONTACTS"
+        android:protectionLevel="signature" />
+    <permission
+        android:name="com.superlogico.birraviso.permission.WRITE_CONTACTS"
         android:protectionLevel="signature" />
 
     <application

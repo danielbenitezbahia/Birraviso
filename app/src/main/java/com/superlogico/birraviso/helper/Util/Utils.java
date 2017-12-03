@@ -3,7 +3,16 @@ package com.superlogico.birraviso.helper.Util;
 import android.content.ContentProviderOperation;
 import android.content.ContentProviderResult;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.provider.ContactsContract;
+import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.superlogico.birraviso.R;
 
 import java.util.ArrayList;
 
@@ -13,8 +22,10 @@ import java.util.ArrayList;
 
 public class Utils {
     private static final Utils ourInstance = new Utils();
+    private static final String FACEBOOK_URL = "https://www.facebook.com/";
     Context appContext;
     String firstName, secondName, phone, email;
+    ContentProviderResult[] results;
 
     public static Utils getInstance() {
         return ourInstance;
@@ -22,7 +33,7 @@ public class Utils {
 
     private Utils() {
     }
-    public void addContact() {
+    public boolean addContact() {
         ArrayList<ContentProviderOperation> operationList = new ArrayList<ContentProviderOperation>();
         operationList.add(ContentProviderOperation.newInsert(ContactsContract.RawContacts.CONTENT_URI)
                 .withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, null)
@@ -52,11 +63,39 @@ public class Utils {
                 .build());
 
         try{
+            results = appContext.getContentResolver().applyBatch(ContactsContract.AUTHORITY, operationList);
 
-            ContentProviderResult[] results = appContext.getContentResolver().applyBatch(ContactsContract.AUTHORITY, operationList);
         }catch(Exception e){
             e.printStackTrace();
         }
+        if(null != results){
+            return true;
+        }
+        return false;
+
+    }
+
+    public Intent newFacebookIntent(PackageManager pm,String url) {
+        url = FACEBOOK_URL + url;
+        Uri uri = Uri.parse(url);
+        try {
+            ApplicationInfo applicationInfo = pm.getApplicationInfo("com.facebook.katana", 0);
+            if (applicationInfo.enabled) {
+                uri = Uri.parse("fb://facewebmodal/f?href=" + url);
+            }
+        } catch (PackageManager.NameNotFoundException ignored) {
+            this.toastError("ERROR FACEBOOK");
+        }
+        return new Intent(Intent.ACTION_VIEW, uri);
+    }
+
+    public void toastError(String errorToShow){
+        Toast toast = Toast.makeText(getAppContext(), errorToShow, Toast.LENGTH_LONG);
+        View view = toast.getView();
+        view.setBackgroundResource(R.color.colorAccent);
+        TextView text = (TextView) view.findViewById(android.R.id.message);
+/*here you can do anything with text*/
+        toast.show();
     }
 
     public Context getAppContext() {

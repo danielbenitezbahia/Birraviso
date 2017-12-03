@@ -4,14 +4,23 @@ package com.superlogico.birraviso.activity;
  * Created by Daniel on 7/3/2017.
  */
 
+import android.annotation.TargetApi;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.ActivityNotFoundException;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -26,11 +35,13 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.superlogico.birraviso.DataHolder;
 import com.superlogico.birraviso.MainActivity;
+import com.superlogico.birraviso.Manifest;
 import com.superlogico.birraviso.R;
 import com.superlogico.birraviso.app.AppConfig;
 import com.superlogico.birraviso.app.AppController;
 import com.superlogico.birraviso.helper.SQLiteHandler;
 import com.superlogico.birraviso.helper.SessionManager;
+import com.superlogico.birraviso.helper.Util.Utils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -56,6 +67,7 @@ public class BeerDetailsActivity extends AppCompatActivity {
     private static final String BEER_ID = "id";
 
     private static final String KEY_UID = "uid";
+    private static final int PERMISSION_REQUEST_CONTACT = 1;
 
     private static final String TAG = RegisterActivity.class.getSimpleName();
     private static final String WHATSAPP = "whatsapp";
@@ -76,6 +88,7 @@ public class BeerDetailsActivity extends AppCompatActivity {
     private TextView tvWhatsapp;
     private TextView tvFacebook;
     private TextView tvEmail;
+    private String firstName, secondName, phoneNumber, email, facebook;
 
     private ProgressDialog pDialog;
     private SessionManager session;
@@ -110,12 +123,16 @@ public class BeerDetailsActivity extends AppCompatActivity {
     private ImageView imgIcon;
     private String beer_id;
     private Boolean favoriteMode;
+    private Utils util;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_beer_details);
+
+        util = Utils.getInstance();
+        util.setAppContext(getApplicationContext());
 
      /*   mDrawable = ContextCompat.getDrawable(this, R.drawable.birra);
         mDrawable.setColorFilter(new PorterDuffColorFilter(0xfff000,PorterDuff.Mode.DARKEN));*/
@@ -151,9 +168,9 @@ public class BeerDetailsActivity extends AppCompatActivity {
         tvBeerSrm = (TextView) findViewById(R.id.srmBeer);
         tvBeerAlcohol = (TextView) findViewById(R.id.alcoholBeer);
         // tvBeerDescrpition = (TextView) findViewById(R.id.description);
-        tvWhatsapp = (TextView) findViewById(R.id.homebrewerWhatsapp);
-        tvFacebook = (TextView) findViewById(R.id.homebrewerFacebook);
-        tvEmail = (TextView) findViewById(R.id.homebrewerEmail);
+       // tvWhatsapp = (TextView) findViewById(R.id.homebrewerWhatsapp);
+        //tvFacebook = (TextView) findViewById(R.id.homebrewerFacebook);
+       // tvEmail = (TextView) findViewById(R.id.homebrewerEmail);
 
         db = new SQLiteHandler(getApplicationContext());
 
@@ -165,9 +182,10 @@ public class BeerDetailsActivity extends AppCompatActivity {
         tvBeerIbu.setText("IBU: " + beerIbu);
         tvBeerSrm.setText("SRM: " + beerSrm);
         tvBeerAlcohol.setText("ABV: " + beerAlcohol);
-        tvWhatsapp.setText("WHATSAPP: " + profileDetails.get(WHATSAPP));
-        tvFacebook.setText("FACEBOOK: " + profileDetails.get(FACEBOOK));
-        tvEmail.setText("EMAIL: " + profileDetails.get(PUBLIC_EMAIL));
+        phoneNumber = profileDetails.get(WHATSAPP);
+        facebook = profileDetails.get(FACEBOOK);
+        email = profileDetails.get(PUBLIC_EMAIL);
+        firstName = profileDetails.get(CONTACT_HB);
         // tvBeerDescrpition.setText(beerDescription);
 
 
@@ -189,25 +207,37 @@ public class BeerDetailsActivity extends AppCompatActivity {
             finish();
         }
 
-     /*   btnCancel.setOnClickListener(new View.OnClickListener() {
-
-            public void onClick(View view) {
-                Intent intent = new Intent(BeerDetailsActivity.this,
-                        MainActivity.class);
-                intent.putExtra("homebrewer","true");
-                startActivity(intent);
-                finish();
-            }
-
-        });*/
-
-
         FloatingActionButton myFab = (FloatingActionButton) findViewById(R.id.fabAddHombrewerFavorites);
         myFab.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 addThisHBtoFavorites();
             }
         });
+        ImageView whatsappButton = (ImageView) findViewById(R.id.TextView04);
+        ImageView facebookButton = (ImageView) findViewById(R.id.TextView05);
+        ImageView emailButton = (ImageView) findViewById(R.id.TextView06);
+        whatsappButton.setOnClickListener(new View.OnClickListener() {
+
+            public void onClick(View view) {
+                addContact();
+            }
+
+        });
+        facebookButton.setOnClickListener(new View.OnClickListener() {
+
+            public void onClick(View view) {
+                Intent i = util.newFacebookIntent(getApplicationContext().getPackageManager(),facebook);
+                startActivity(i);
+            }
+        });
+        emailButton.setOnClickListener(new View.OnClickListener() {
+
+            public void onClick(View view) {
+                sendEmail();
+
+            }
+        });
+
 
         // Set Image color regarding SRM
 
@@ -231,6 +261,21 @@ public class BeerDetailsActivity extends AppCompatActivity {
 
     }
 
+    private void sendEmail() {
+        String mailto = "mailto:" + email +
+                "&subject=" + Uri.encode("subject") +
+                "&body=" + Uri.encode("bodyText");
+
+        Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
+        emailIntent.setData(Uri.parse(mailto));
+
+        try {
+            startActivity(emailIntent);
+        } catch (ActivityNotFoundException e) {
+            //TODO: Handle case where no email app is available
+        }
+    }
+
     @Override
     public void onBackPressed() {
         Intent intent = new Intent(BeerDetailsActivity.this,MainActivity.class);
@@ -244,9 +289,8 @@ public class BeerDetailsActivity extends AppCompatActivity {
                     "El cervecero " + profileDetails.get(CONTACT_HB) + " fue agregado exitosamente a tu lista de favoritos!", Toast.LENGTH_LONG)
                     .show();
         } else {
-            Toast.makeText(getApplicationContext(),
-                    "El cervecero " + profileDetails.get(CONTACT_HB) + " ya existe en tu lista de favoritos y podes ver todas sus birras publicadas yendo a la seccion Favoritos!", Toast.LENGTH_LONG)
-                    .show();
+            Utils.getInstance().toastError("El cervecero " + profileDetails.get(CONTACT_HB) + " ya existe en tu lista de favoritos y podes ver todas sus birras publicadas yendo a la seccion Favoritos!");
+
         }
     }
 
@@ -344,6 +388,91 @@ public class BeerDetailsActivity extends AppCompatActivity {
         AppController.getInstance().addToRequestQueue(strReq,tag_string_req);
     }
 
+    public void askForContactPermission(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(getApplicationContext(),Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+                // Should we show an explanation?
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                        Manifest.permission.READ_CONTACTS)) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                    builder.setTitle("Contacts access needed");
+                    builder.setPositiveButton(android.R.string.ok, null);
+                    builder.setMessage("please confirm Contacts access");//TODO put real question
+                    builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                        @TargetApi(Build.VERSION_CODES.M)
+                        @Override
+                        public void onDismiss(DialogInterface dialog) {
+                            requestPermissions(
+                                    new String[]
+                                            {Manifest.permission.READ_CONTACTS}
+                                    , PERMISSION_REQUEST_CONTACT);
+                        }
+                    });
+                    builder.show();
+                    // Show an expanation to the user *asynchronously* -- don't block
+                    // this thread waiting for the user's response! After the user
+                    // sees the explanation, try again to request the permission.
+
+                } else {
+                    // No explanation needed, we can request the permission.
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{"android.permission.WRITE_CONTACTS"},
+                            PERMISSION_REQUEST_CONTACT);
+
+                    // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                    // app-defined int constant. The callback method gets the
+                    // result of the request.
+                }
+            }else{
+                addContact();
+            }
+        }
+        else{
+            addContact();
+        }
+    }
+
+    private void addContact() {
+        util.setFirstName(firstName);
+        util.setEmail(email);
+        util.setSecondName(secondName);
+        util.setPhone(phoneNumber);
+        if(util.addContact()){
+            Toast.makeText(getApplicationContext(),"Se agrego con éxito el contacto: " + firstName + " a tu Whatsapp", Toast.LENGTH_SHORT).show();
+        }else{
+            Toast.makeText(getApplicationContext(),"Ups, algo salió mal... no se pudo agregar este cervecero a tu Whatsapp", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+
+        switch (requestCode) {
+            case PERMISSION_REQUEST_CONTACT: {
+
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    this.addContact();
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+
+                } else {
+                    Toast.makeText(getApplicationContext(),"No permission for contacts", Toast.LENGTH_SHORT);
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request
+        }
+    }
+
+
     public static int getResId(String resName, Class<?> c) {
 
         try {
@@ -354,6 +483,7 @@ public class BeerDetailsActivity extends AppCompatActivity {
             return -1;
         }
     }
+
 
     private void showDialog() {
         if (!pDialog.isShowing())

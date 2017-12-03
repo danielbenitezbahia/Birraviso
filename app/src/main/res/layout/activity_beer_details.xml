@@ -5,17 +5,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
     <LinearLayout
         android:id="@+id/linearLayout5"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="fill_parent"
         android:layout_gravity="center"
         android:orientation="vertical">
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                     android:layout_width="match_parent"
-                    android:layout_height="120dp"
+                    android:layout_height="150dp"
                     android:layout_margin="28dp"
                     android:padding="8dp">
 
@@ -52,93 +51,87 @@
             android:src="@drawable/layer_pint_of_beer"/>
     </RelativeLayout>
 
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                    android:layout_width="match_parent"
-                    android:layout_height="70dp"
-                    android:layout_margin="28dp"
-                    android:padding="8dp">
-
-        <TextView
-            android:id="@+id/ibuBeer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_toLeftOf="@+id/alcoholBeer"
-            android:gravity="center"
-            android:paddingRight="10dp"
-            android:text="IBU: 45"
-            android:textColor="@android:color/black"
-            android:textSize="20dp"/>
-
-        <TextView
-            android:id="@+id/alcoholBeer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:layout_margin="10dp"
-            android:gravity="center"
-            android:text="ABV: 5,5%"
-            android:textColor="@android:color/black"
-            android:textSize="20dp"/>
-
-        <TextView
-            android:id="@+id/srmBeer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_toRightOf="@+id/alcoholBeer"
-            android:gravity="center"
-            android:paddingLeft="10dp"
-            android:text="SMR: 20"
-            android:textColor="@android:color/black"
-            android:textSize="20dp"/>
-    </RelativeLayout>
-
-
-
-    <RelativeLayout
-        android:layout_width="382dp"
-        android:layout_height="207dp"
-        android:orientation="vertical">
-
-        <LinearLayout
-            android:id="@+id/contactInformation"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:layout_margin="20dp"
-            android:orientation="vertical">
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                        android:layout_width="match_parent"
+                        android:layout_height="70dp"
+                        android:layout_marginBottom="80dp"
+                        android:padding="8dp">
 
             <TextView
-                android:id="@+id/homebrewerWhatsapp"
+                android:id="@+id/ibuBeer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
+                android:layout_toLeftOf="@+id/alcoholBeer"
                 android:gravity="center"
-                android:text="Whatsapp: "
+                android:paddingRight="10dp"
+                android:text="IBU: 45"
                 android:textColor="@android:color/black"
                 android:textSize="20dp"/>
 
             <TextView
-                android:id="@+id/homebrewerFacebook"
+                android:id="@+id/alcoholBeer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_margin="10dp"
                 android:gravity="center"
-                android:text="Facebook: "
+                android:text="ABV: 5,5%"
                 android:textColor="@android:color/black"
                 android:textSize="20dp"/>
 
             <TextView
-                android:id="@+id/homebrewerEmail"
+                android:id="@+id/srmBeer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_toRightOf="@+id/alcoholBeer"
                 android:gravity="center"
-                android:text="Email: "
+                android:paddingLeft="10dp"
+                android:text="SMR: 20"
                 android:textColor="@android:color/black"
                 android:textSize="20dp"/>
-        </LinearLayout>
+        </RelativeLayout>
+
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:gravity="center"
+            android:id="@+id/TextView04"
+            android:layout_toLeftOf="@+id/TextView05"
+            android:padding="25dp"
+            android:layout_centerVertical="true"
+            android:src="@drawable/whatsapp"></ImageView>
+
+
+
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:gravity="center"
+            android:id="@+id/TextView05"
+            android:layout_centerInParent="true"
+            android:padding="25dp"
+            android:src="@drawable/facebook"
+            ></ImageView>
+
+
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:gravity="center"
+            android:id="@+id/TextView06"
+            android:layout_toRightOf="@+id/TextView05"
+            android:padding="25dp"
+            android:layout_centerVertical="true"
+            android:src="@drawable/email"></ImageView>
 
 
     </RelativeLayout>

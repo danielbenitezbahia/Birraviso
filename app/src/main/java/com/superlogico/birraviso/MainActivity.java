@@ -81,7 +81,6 @@ public class MainActivity extends AppCompatActivity
     private static final String TAG = RegisterActivity.class.getSimpleName();
     private static final String ID_BEERS_TO_DELETE = "id_beers_to_delete";
     private static final String FAVORITE_MODE = "favorite_mode";
-    private static final int PERMISSION_REQUEST_CONTACT = 1;
     private SQLiteHandler db;
     private SessionManager session;
     private ProgressDialog pDialog;
@@ -132,7 +131,6 @@ public class MainActivity extends AppCompatActivity
     private MapFragment mMapFragment;
     private FragmentTransaction fragmentTransaction;
     private Utils util;
-    private String firstName, secondName, phoneNumber, email;
     private HashMap markerHb;
     private String selected_hb;
 
@@ -142,8 +140,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        util = Utils.getInstance();
-        util.setAppContext(getApplicationContext());
+
        // this.askForContactPermission();
 
 
@@ -484,9 +481,16 @@ public class MainActivity extends AppCompatActivity
                 favoriteMode = false;
                 this.getBeerList();
                 return true;
+            case R.id.filters:
+                this.showFilterFragment();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void showFilterFragment() {
+
     }
 
     private void showMyFavoriteHomebrewerBeers() {
@@ -1079,85 +1083,6 @@ public class MainActivity extends AppCompatActivity
         DataHolder.getInstance().setShowHBBeers(false);
     }
 
-    public void askForContactPermission(){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(getApplicationContext(),Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
-                // Should we show an explanation?
-                if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                        Manifest.permission.READ_CONTACTS)) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                    builder.setTitle("Contacts access needed");
-                    builder.setPositiveButton(android.R.string.ok, null);
-                    builder.setMessage("please confirm Contacts access");//TODO put real question
-                    builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                        @TargetApi(Build.VERSION_CODES.M)
-                        @Override
-                        public void onDismiss(DialogInterface dialog) {
-                            requestPermissions(
-                                    new String[]
-                                            {Manifest.permission.READ_CONTACTS}
-                                    , PERMISSION_REQUEST_CONTACT);
-                        }
-                    });
-                    builder.show();
-                    // Show an expanation to the user *asynchronously* -- don't block
-                    // this thread waiting for the user's response! After the user
-                    // sees the explanation, try again to request the permission.
-
-                } else {
-                   // No explanation needed, we can request the permission.
-                    ActivityCompat.requestPermissions(this,
-                            new String[]{"android.permission.WRITE_CONTACTS"},
-                            PERMISSION_REQUEST_CONTACT);
-
-                    // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
-                    // app-defined int constant. The callback method gets the
-                    // result of the request.
-                }
-            }else{
-                addContact();
-            }
-        }
-        else{
-            addContact();
-        }
-    }
-
-    private void addContact() {
-        util.setFirstName(firstName);
-        util.setEmail(email);
-        util.setSecondName(secondName);
-        util.setPhone(phoneNumber);
-        util.addContact();
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
-
-        switch (requestCode) {
-            case PERMISSION_REQUEST_CONTACT: {
-
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                    this.addContact();
-                    // permission was granted, yay! Do the
-                    // contacts-related task you need to do.
-
-                } else {
-                    Toast.makeText(getApplicationContext(),"No permission for contacts", Toast.LENGTH_SHORT);
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
-                }
-                return;
-            }
-
-            // other 'case' lines to check for other
-            // permissions this app might request
-        }
-    }
 
 
     @Override

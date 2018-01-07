@@ -1,20 +1,15 @@
 package com.superlogico.birraviso;
 
-import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -48,6 +43,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.superlogico.birraviso.activity.AddBeerActivity;
+import com.superlogico.birraviso.activity.AdjustmentActivity;
 import com.superlogico.birraviso.activity.BeerDetailsActivity;
 import com.superlogico.birraviso.activity.LoginActivity;
 import com.superlogico.birraviso.activity.RegisterActivity;
@@ -60,7 +56,6 @@ import com.superlogico.birraviso.app.AppConfig;
 import com.superlogico.birraviso.app.AppController;
 import com.superlogico.birraviso.helper.SQLiteHandler;
 import com.superlogico.birraviso.helper.SessionManager;
-import com.superlogico.birraviso.helper.Util.Util;
 import com.superlogico.birraviso.helper.Util.Utils;
 import com.superlogico.birraviso.model.Beer;
 import com.superlogico.birraviso.model.HomeBrewer;
@@ -206,6 +201,11 @@ public class MainActivity extends AppCompatActivity
         pDialog.setCancelable(false);
 
         Intent myIntent = getIntent(); // gets the previously created intent
+        String isMap = myIntent.getStringExtra("map");
+        if(TRUE_HB.equals(isMap)){
+            String hb = myIntent.getStringExtra("hb");
+            this.showHomebrewerBeers(hb);
+        }else{
         String isHomebrewer = myIntent.getStringExtra("homebrewer");
         DataHolder dataHolder = DataHolder.getInstance();
         favoriteMode = dataHolder.isFavoritesMode();
@@ -225,7 +225,7 @@ public class MainActivity extends AppCompatActivity
             }else{
                 this.showMyFavoriteHomebrewerBeers();
             }
-        }
+        }}
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
 
@@ -490,6 +490,9 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void showFilterFragment() {
+        Intent intent = new Intent(MainActivity.this,AdjustmentActivity.class);
+        startActivity(intent);
+        finish();
 
     }
 

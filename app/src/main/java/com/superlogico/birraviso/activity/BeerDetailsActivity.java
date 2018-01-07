@@ -67,7 +67,7 @@ public class BeerDetailsActivity extends AppCompatActivity {
     private static final String BEER_ID = "id";
 
     private static final String KEY_UID = "uid";
-    private static final int PERMISSION_REQUEST_CONTACT = 1;
+    private static final int PERMISSION_REQUEST_CONTACT = 100;
 
     private static final String TAG = RegisterActivity.class.getSimpleName();
     private static final String WHATSAPP = "whatsapp";
@@ -219,7 +219,8 @@ public class BeerDetailsActivity extends AppCompatActivity {
         whatsappButton.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View view) {
-                addContact();
+                //addContact();
+                askForContactPermission();
             }
 
         });
